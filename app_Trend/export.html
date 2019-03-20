@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+    <meta charset="UTF-8">
+    <title>Export Trend Data to CSV</title>
+    <link rel="stylesheet" href="export.css">
+</head>
+  
+  <body>
+      <div class="container">
+          <div class="vboxFill">
+            <div class="hbox noPadding">
+              <div class="hbox label noMargin">File Name:</div>
+              <div class="hboxFill">
+                <input class="inputEntry" id="txtFileName">
+              </div>
+              <div class="hbox">
+                <div class="btn" id="btnBrowse">Browse...</div>
+              </div>
+            </div>
+    
+            <div class="hbox noPadding">
+              <div class="hbox label noMargin">Sample Rate:</div>
+              <div class="hbox">
+                <select id="ddSampleRate">
+                    <option value="1">1s</option>
+                    <option value="2">2s</option>
+                    <option value="5">5s</option>
+                    <option value="10">10s</option>
+                    <option value="30">30s</option>
+                    <option value="60">1m</option>
+                    <option value="300">5m</option>
+                    <option value="600">10m</option>
+                    <option value="1200">20m</option>
+                    <option value="1800">30m</option>
+                    <option value="3600">1h</option>
+                    <option value="7200">2h</option>
+                    <option value="14400">4h</option>
+                    <option value="28800">8h</option>
+                    <option value="43200">12h</option>
+                    <option value="86400">1d</option>
+                    <option value="172800">2d</option>
+                    <option value="display">Display</option>
+                </select> 
+              </div>
+              <div class="hboxFill"></div>
+            </div>
+
+            <div class="hbox noPadding">
+                <div class="hbox label noMargin"># of Samples:</div>
+                <div class="hbox">
+                  <input class="inputEntry" readonly id="txtNumSamples">
+                </div>
+            </div>
+            
+            <div class="vboxFill"></div>
+            
+            <div class="hbox">
+                <div class="hboxFill"></div>
+                <div class="btn" id="btnCancel">Cancel</div>
+                <div class="btn" id="btnSave">Save</div>
+              </div>
+            </div>
+          </div>
+        </div>
+    <script src="export.js"></script>
+</body>
+</html>

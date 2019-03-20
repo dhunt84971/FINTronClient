@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pen Properties</title>
+    <link rel="stylesheet" href="penProperties.css">
+</head>
+  
+  <body>
+    <div class="container">
+      <div class="vboxFill">
+        <div class="label" id="txtTitle"></div>
+        <hr/>
+        <div class="label">Pen Range -</div>
+        <div class="hbox">
+          <input type="radio" name="chkAutoManRange" id="optAuto">
+          <label for="optAuto" class="label leftMargin">Automatic</label>
+        </div>
+        <div class="hbox">
+          <input type="radio" name="chkAutoManRange" id="optManual">
+          <label for="optManual" class="label leftMargin">Manual</label>
+        </div>
+        <div class="hbox">
+          <div class="label indent" style="width:120px">Minimum Value:</div>
+          <input class="inputEntry leftMargin" id="txtMin">
+        </div>
+        <div class="hbox">
+          <div class="label indent" style="width:120px">Maximum Value:</div>
+          <input class="inputEntry leftMargin" id="txtMax">
+        </div>
+        <div class="vboxFill"></div>
+        <hr/>
+        <div class="hbox">
+          <div class="btn btnDialog" id="btnRemovePen">Remove Pen</div>
+          <div class="hboxFill"></div>
+          <div class="btn btnDialog" id="btnDone">Done</div>
+          <div class="btn btnDialog btnRight" id="btnCancel">Cancel</div>
+        </div>
+      </div>
+    </div>
+    <script src="penProperties.js"></script>
+</body>
+</html>

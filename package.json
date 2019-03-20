@@ -1,0 +1,51 @@
+{
+  "name": "FINTronClient",
+  "productname": "FIN Client Electron App",
+  "version": "1.0.0",
+  "description": "FIN Client Electron App.",
+  "main": "main.js",
+  "author": {
+    "name": "Dave Hunt",
+    "email": "dhuntlinux@gmail.com"
+  },
+  "homepage": "http://github.com",
+  "repository": "http://github.com",
+  "license": "MIT",
+  "dependencies": {
+    "chart.js": "^2.7.3",
+    "electron-modal": "^1.0.0",
+    "jquery": "^3.3.1",
+    "js-datepicker": "^4.0.10",
+    "js-treeview": "^1.1.5",
+    "moment": "^2.24.0",
+    "mssql": "^4.3.2",
+    "timepicker": "^1.11.14"
+  },
+  "devDependencies": {
+    "electron": "^4.1.0",
+    "electron-builder": "^20.39.0"
+  },
+  "scripts": {
+    "start": "electron .",
+    "pack": "build --dir",
+    "dist": "build",
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
+    "package-win": "electron-packager . FINTronClient --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=true --out=release-builds --version-string.CompanyName=Hunt --version-string.FileDescription=FINTronClient --version-string.ProductName=\"FIN Client Electron App\"",
+    "package-linux": "electron-packager . FINTronClient --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=release-builds"
+  },
+  "postinstall": "electron-builder install-app-deps",
+  "build": {
+    "appId": "FINTronClient",
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "maintainer": "Dave Hunt"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/chart.ico"
+    }
+  }
+}

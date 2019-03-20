@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+    <meta charset="UTF-8">
+    <title>Trend Duration</title>
+    <link rel="stylesheet" href="../node_modules/timepicker/jquery.timepicker.min.css">
+    <link rel="stylesheet" href="../node_modules/js-datepicker/dist/datepicker.min.css">
+    <link rel="stylesheet" href="pickTimeRange.css">
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+</head>
+  
+  <body>
+      <div class="container">
+          <div class="vboxFill">
+            <div class="vbox">
+              <div class="hbox label noMargin">Start Date and Time:</div>
+              <div class="hbox">
+                <input class="inputEntry" id="dpStartDate">
+                <input class="inputEntry" id="dpStartTime">
+              </div>
+            </div>
+    
+            <div class="vbox">
+              <div class="hbox label noMargin">End Date and Time:</div>
+              <div class="hbox">
+                <input class="inputEntry" id="dpEndDate">
+                <input class="inputEntry noMargin" id="dpEndTime">
+              </div>
+              <div class="btn leftMargin" id="btnNow">Move End to Now</div>
+            </div>
+            
+            <div class="vboxFill"></div>
+            
+            <div class="vbox">
+              <div class="hbox label noMargin">Duration:</div>
+            
+              <div class="hbox">
+                <div class="divEntry"><input class="inputEntry" id="txtDuration"></div>
+                <div class="btn" id="btnCancel">Cancel</div>
+                <div class="hboxFill"></div>
+                <div class="btn" id="btnAccept">Accept</div>
+              </div>
+            </div>
+          </div>
+        </div>
+    <script src="../node_modules/js-datepicker/dist/datepicker.min.js"></script>
+    <!-- <script src="node_modules/timepicker/jquery.timepicker.min.js"></script> -->
+    <script src="pickTimeRange.js"></script>
+</body>
+</html>

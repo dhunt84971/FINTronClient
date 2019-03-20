@@ -1,0 +1,89 @@
+Arguments: 
+  /usr/bin/node /usr/share/yarn/bin/yarn.js add electron-builder --dev
+
+PATH: 
+  /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/dave/go/bin:/usr/local/go/bin
+
+Yarn version: 
+  1.15.2
+
+Node version: 
+  8.15.1
+
+Platform: 
+  linux x64
+
+Trace: 
+  SyntaxError: /home/dave/ownCloud/Dropbox/Electron_Projects/FINTronClient/package.json: Unexpected token } in JSON at position 1753
+      at JSON.parse (<anonymous>)
+      at /usr/share/yarn/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/usr/share/yarn/lib/cli.js:304:30)
+      at /usr/share/yarn/lib/cli.js:315:13
+      at <anonymous>
+
+npm manifest: 
+  {
+    "name": "FINTronClient",
+    "productname": "FIN Client Electron App",
+    "version": "1.0.0",
+    "description": "FIN Client Electron App.",
+    "main": "main.js",
+    "author": "Dave Hunt dhuntlinux@gmail.com",
+    "license": "MIT",
+    "dependencies": {
+      "chart.js": "^2.7.3",
+      "electron-modal": "^1.0.0",
+      "jquery": "^3.3.1",
+      "js-datepicker": "^4.0.10",
+      "js-treeview": "^1.1.5",
+      "moment": "^2.24.0",
+      "mssql": "^4.3.2",
+      "timepicker": "^1.11.14"
+    },
+    "devDependencies": {
+      "electron": "^4.1.0",
+      "electron-builder": "^20.39.0"
+    },
+    "scripts": {
+      "pack": "build --dir",
+      "dist": "build",
+      "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
+      "package-win": "electron-packager . FINTronClient --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=true --out=release-builds --version-string.CompanyName=Hunt --version-string.FileDescription=FINTronClient --version-string.ProductName=\"FIN Client Electron App\"",
+      "package-linux": "electron-packager . FINTronClient --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=release-builds"
+    },
+    "build": {
+      "appId": "FINTronClient",
+      "category": "your.app.category.type",
+      "dmg": {
+        "contents": [
+          {
+            "x": 110,
+            "y": 150
+          },
+          {
+            "x": 240,
+            "y": 150,
+            "type": "link",
+            "path": "/Applications"
+          }
+        ]
+      },
+      "linux": {
+        "target": [
+          "AppImage",
+          "deb"
+        ]
+      },
+      "win": {
+        "target": "squirrel",
+        "icon": "build/icon.ico"
+      }
+    },
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

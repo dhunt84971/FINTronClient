@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+    <meta charset="UTF-8">
+    <title>FIN Electron Client</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+  
+  <body>
+    <div class="container">
+      <div class="top appNav">
+          <div class="btn btnApp hide" id="btnAppLogin">Login</div>
+          <div class="btn btnApp hide" id="btnAppLive">Live</div>
+          <div class="btn btnApp" id="btnAppTrend">Trend</div>
+          <div class="btn btnApp hide" id="btnAppExport">Export</div>
+          <div class="btn btnApp hide" id="btnAppReports">Reports</div>
+          <div class="btn btnApp" id="btnAppSettings">Settings</div>
+          <div class="btn btnApp hide" id="btnAppAbout">About</div>
+      </div>
+      <div class="horDivider"></div>
+      <div class="appWindow" id="winLive"></div>
+      
+      <!--#region TREND DIV -->
+      <div class="appWindow" id="winTrend">
+      <div class="top">
+        <div class="btn btnBar" id="trend_btnNew">New</div>
+        <div class="btn btnBar" id="trend_btnOpen">Open</div>
+        <div class="btn btnBar" id="trend_btnSave">Save</div>
+        <div class="btn btnBar" id="trend_btnSaveAs">SaveAs</div>
+        <div class="btn btnBar" id="trend_btnExport">Export</div>
+        <div class="btn btnBar" id="trend_btnTimes">Times</div>
+        <div class="hboxFill" id="titleTrend"></div>
+      </div>
+      <div class="center">
+        <div class="center_left">
+          <div class="center_left_top">
+            <canvas class="hide" id="chart"></canvas>
+            <div class="vboxFill" id="msgAddaPen">Add a pen</div>
+          </div>
+          <div class="bottom_filler"></div>
+          <div class="bottom">
+            <div class="bottom_nav">
+              <div class="horizSpacer"></div>
+              <div class="btn btnNav" id="btn7d">7 days</div>
+              <div class="btn btnNav" id="btn1d">1 day</div>
+              <div class="btn btnNav" id="btn12h">12 hours</div>
+              <div class="btn btnNav" id="btn8h">8 hours</div>
+              <div class="btn btnNav" id="btn4h">4 hours</div>
+              <div class="btn btnNav" id="btn1h">1 hour</div>  
+              <div class="btn btnNav" id="btn10m">10 min</div>  
+              <div class="btn btnNav" id="btn1m">1 min</div>
+              <div class="btn btnNav" id="btn10s">10 sec</div>                                
+              <div class="horizSpacer"></div>
+            </div>
+            <div class="bottom_nav">
+              <div class="horizSpacer"></div>
+              <div class="btn btnNav" id="btnStartPast">&lt;&lt;</div>
+              <div class="btn btnNav" id="btnStartFuture">&gt;&gt;</div>
+              <div class="btn btnNav" id="btnPanPast">&lt;</div>
+              <div class="bottom_lbl" id="lblChartRange"></div>
+              <div class="btn btnNav" id="btnPanFuture">&gt;</div>
+              <div class="btn btnNav" id="btnEndPast">&lt;&lt;</div>
+              <div class="btn btnNav" id="btnEndFuture">&gt;&gt;</div>
+              <div class="btn btnNav" id="btnNow">&gt;&gt;|</div>
+              <div class="horizSpacer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="center_right" id="divPenButtons">
+          <div class="hbox penButtons" id="divAddPen">
+            <div class="btn btnPen" id="btnAddPen">Add Pen</div>
+          </div>
+        </div>
+      </div>
+      </div>
+      <!--#endregion TREND DIV -->
+      <div class="appWindow" id="winExport"></div>
+      
+      <!--#region REPORTS DIV-->
+      <div class="appWindow" id="winReports"></div>
+      <!--#endregion REPORTS DIV-->
+
+      <!--#region SETTINGS DIV-->
+      <div class="appWindow" id="winSettings">
+        <div class="vbox settingsLabel">DATABASE -</div>
+        <div class="hboxSettings">
+          <div class="vbox settingsLabel">Server Host Address
+              <input class="inputEntry" id="txtHost">
+          </div>
+          <div class="vbox settingsLabel indent">SQL TcpIp Port
+              <input class="inputEntry" id="txtPort">
+          </div>
+        </div>
+        <div class="hboxSettings">
+          <div class="vbox settingsLabel">SQL Database Name
+              <input class="inputEntry" id="txtDatabase">
+          </div>
+          <div class="vbox settingsLabel indent">FIN Linked Server Name
+              <input class="inputEntry" id="txtFinLinkedServer">
+          </div>
+        </div>
+        <div class="hboxSettings">
+          <div class="vbox settingsLabel">Username
+              <input class="inputEntry" id="txtUsername">
+          </div>
+          <div class="vbox settingsLabel indent">Password
+              <input class="inputEntry" id="txtPassword" type="password">
+          </div>
+        </div>
+        <div class="vbox"></div>
+        <div class="vbox">
+          <div class="hboxSettings">
+            <div class="vbox">
+              <div class="btn btnSettings" id="btnTestSQLConnection">TEST SQL CONNECTION</div>
+            </div>
+            <div class="vbox">
+              <div class="btn btnSettings" id="btnTestFINConnection">TEST FIN CONNECTION</div>
+            </div>
+          </div>
+        </div>
+        <div class="vboxFill"></div>
+        <div class="hbox">
+          <div class="hboxFill"></div>
+          <div class="btn btnSettings" id="btnSettingsApply">APPLY</div>
+        </div>      
+      </div>
+      <!--#endregion SETTINGS DIV-->
+
+      <div class="appWindow" id="winAbout"></div>
+    </div>
+  
+    <!-- Third Party Dependencies -->
+    <script src="scripts/thirdParty/Chart.js"></script>
+    <script src="scripts/thirdParty/utils.js"></script>
+
+    <!-- Global non-specific Scripts -->
+    <script src="scripts/globals.js"></script>
+    <script src="scripts/database.js"></script>
+    <script src="scripts/settings.js"></script>
+    
+    <!-- Global Function Specific Scripts -->
+    <script src="getChartData.js"></script>
+    <script src="script.js"></script>
+    
+    <!-- DIV Specific Scripts-->
+    <script src="app_Trend/app_Trend.js"></script>
+    <script src="app_Settings/app_Settings.js"></script>
+  </body>
+</html>

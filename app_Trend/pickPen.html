@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add/Edit Pen</title>
+    <link rel="stylesheet" href="../node_modules/js-treeview/dist/treeview.min.css">
+    <link rel="stylesheet" href="pickPen.css">
+</head>
+  
+  <body>
+    <div class="container">
+      <div class="top">
+        <div class="top_lbl">Selected Tag</div>
+        <div class="top_entry" id="txtTop_entry"></div>
+      </div>
+      <div class="top">
+        <div class="top_lbl">Description</div>
+        <div class="top_entry" id="txtTop_description"></div>
+      </div>
+      <div class="center">
+        <div class="center_location">
+          <div class="header_label">&nbsp;&nbsp;Locations</div>
+          <div id="tvLocations"></div>
+        </div>
+        <div class="center_divide"></div>
+        <div class="center_tags">
+          <div class="header_label">&nbsp;&nbsp;Data Points</div>
+          <div id="lstTags"></div>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="btn" id="btnSelect">Select</div>
+        <div class="horizSpacer"></div>
+        <div class="btn" id="btnDone">Done</div>
+      </div>
+    </div>
+    <script src="../node_modules/js-treeview/dist/treeview.min.js"></script>
+    <script src="../scripts/globals.js"></script> <!-- Required for access to dependencies. -->
+    <script src="../scripts/settings.js"></script> <!-- Required for access to settings. -->
+    <script src="../scripts/database.js"></script> <!-- Required for access to database functions. -->
+    <script src="../getChartData.js"></script>
+    <script src="pickPen.js"></script>
+</body>
+</html>
+
