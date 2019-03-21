@@ -21,3 +21,14 @@ function ShowWarningMessageBox(message){
 
     dialog.showMessageBox(null, options);
 }
+
+function ShowOKMessageBox(message){
+    const options = {
+        type: "info",
+        title: "Information",
+        buttons: ["OK"],
+        message: message,
+      };
+    
+      dialog.showMessageBox(null, options);
+}

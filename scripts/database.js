@@ -4,17 +4,42 @@ function ExecSQLQuery(sqlQuery, callback){
     const pool = new mssql.ConnectionPool(config);
     var conn = pool;
     
-    conn.connect().then(function (err){
-        var request = new mssql.Request(conn);
-        request.query(sqlQuery, function (err, recordsets){
-            if(err){
-                console.log("Database error: " + err);
+    conn.connect()
+        .then(function (){
+            var request = new mssql.Request(conn);
+            request.query(sqlQuery, function (err, recordsets){
+                if(err){
+                    console.log("Database error: " + err);
+                    conn.close();
+                }
+                if (callback){
+                    callback(err, recordsets);
+                }
                 conn.close();
+            });
+        })
+        .catch(function (err){
+            if (err){
+                callback(err);
+                return;
             }
-            if (callback){
-                callback(recordsets);
-            }
-            conn.close();
         });
+
+}
+
+function verifySQLConnection(callback){
+    ExecSQLQuery("SELECT getdate()", (err, recordsets)=>{
+        if (err){
+            if (callback){
+                callback(false);
+            }
+            return false;
+        }
+        else{
+            if (callback){
+                callback(true);
+            }
+            return true;
+        }
     });
 }

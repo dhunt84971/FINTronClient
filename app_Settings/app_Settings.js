@@ -39,6 +39,31 @@ document.getElementById("btnSettingsApply").addEventListener("click", ()=>{
     config.fin = settings.fin;
 });
 
+document.getElementById("btnTestSQLConnection").addEventListener("click", ()=>{
+    verifySQLConnection((result) =>{
+        if (result){
+            ShowOKMessageBox("Connection successful.");
+        }
+        else{
+            ShowWarningMessageBox("Connection failed.");
+        }
+    })
+});
+
+document.getElementById("btnTestFINConnection").addEventListener("click", ()=>{
+    // Use the GetLocations query to check the FIN connection.
+    GetTags((err, data) =>{
+        if (err){
+            ShowWarningMessageBox("Connection to FIN failed.");
+            return;
+        }
+        else{
+            var tagCount = data.recordset.length;
+            ShowOKMessageBox("Connection to FIN successful. \n" + tagCount + " datapoints available.");
+        }
+    });
+});
+
 //#endregion EVENT HANDLERS
 
 //#region INITIALIZATION

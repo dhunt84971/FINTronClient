@@ -26,24 +26,45 @@ var txtTop_entry = document.getElementById("txtTop_entry");
 ], 'tvLocations');
  */
 
+//#region PAGE ANIMATION FUNCTIONS
+function SelectByInnerText(divID, inText){
+    var buttons = document.getElementById(divID).children;
+    console.log(buttons);
+    for (var i = 0; i < buttons.length; i++){
+        console.log(buttons[i].innerText);
+        if (buttons[i].innerText == inText){
+            buttons[i].classList.add("btn_selected");
+        }
+        else{
+            buttons[i].classList.remove("btn_selected");
+        }
+    }
+}
+
+//#endregion PAGE ANIMATION FUNCTIONS
+
 
 //#region TAGLIST FUNCTIONS
 
 function SelectLocation(location){
     EmptyDiv("lstTags");
     pickedLocation = location;
-    GetTagsbyLocation(pickedLocation, (data) => {
+    GetTagsbyLocation(pickedLocation, (err, data) => {
+        if (err){
+            ShowWarningMessageBox("Failed to get data.");
+            return;
+        }
         console.log(data);
         data.recordset.forEach(rec => {
-            AddItemtoDiv("lstTags", rec.Name);
+            AddItemtoDiv("lstTags", rec.Name, "datapoint");
         });
     });
 }
 
-function AddItemtoDiv(divById, itemInnerText){
+function AddItemtoDiv(divById, itemInnerText, classAdd){
     var newItem = document.createElement("div");
     newItem.innerText = itemInnerText;
-    newItem.classList.add("datapoint");
+    newItem.classList.add(classAdd);
     document.getElementById(divById).appendChild(newItem);
 }
 
@@ -58,7 +79,12 @@ function DatapointPicked(dp, callback){
     }
     pickedPen.name = dp;
     pickedPen.location = pickedLocation;
-    GetTagDescription(dp, (result) => {
+    GetTagDescription(dp, (err, result) => {
+        if (err){
+            ShowWarningMessageBox("Failed to get data.");
+            return;
+        }
+        
         var units = "";
         if (result.recordset[0].Units){
             units = " (" + result.recordset[0].Units + ")";
@@ -78,12 +104,21 @@ function DatapointPicked(dp, callback){
 //#region EVENT HANDLERS
 document.body.addEventListener("click",function(e){
     if(e.target && e.target.classList.contains("datapoint")){
+        SelectByInnerText("lstTags", e.target.innerText);
         DatapointPicked(e.target.innerText);
+    }
+});
+
+document.body.addEventListener("click",function(e){
+    if(e.target && e.target.classList.contains("location")){
+        SelectByInnerText("lstLocations", e.target.innerText);
+        SelectLocation(e.target.innerText);
     }
 });
 
 document.body.addEventListener("dblclick",function(e){
     if(e.target && e.target.classList.contains("datapoint")){
+        SelectByInnerText("lstTags", e.target.innerText);
         DatapointPicked(e.target.innerText, () =>{
             electron.ipcRenderer.send("pen", pickedPen);
         });
@@ -113,6 +148,8 @@ document.getElementById("btnSelect").addEventListener("click", () =>{
 
 document.getElementById("btnDone").addEventListener("click", () =>{
     var window = remote.getCurrentWindow();
+    const size = remote.getCurrentWindow().getSize();
+    saveWindowSize("pickPen", size);
     window.close();
 });
 
@@ -123,26 +160,29 @@ document.getElementById("btnDone").addEventListener("click", () =>{
 // Get the locations from the database and fill in the treeview.
 // This treeview will eventually be replaced with a custom written one.
 function init(callback){
-    GetLocations((data) =>{
+    GetLocations((err, data) =>{
+        if (err){
+            ShowWarningMessageBox("Failed to get data.");
+            return;
+        }
+        
         console.log(data);
         // Add code to parse the returned data into a tvLocations treeview data object.
         //::TODO::
+
+        if (err){
+            ShowWarningMessageBox("Failed to get data.");
+            return;
+        }
+        console.log(data);
         data.recordset.forEach(rec => {
-            var location = {name: rec.Location, children: []};
-            dataLocations.push(location);
+            AddItemtoDiv("lstLocations", rec.Location, "location");
         });
-        console.log(dataLocations);
-        tvLocations = new TreeView(
-            dataLocations
-        , 'tvLocations');
 
         // Pick the first location.
+        SelectByInnerText("lstLocations", data.recordset[0].Location);
         SelectLocation(data.recordset[0].Location);
         
-        // This event handler has to be initiated here because of the order of execution.
-        tvLocations.on("select", function (e) {
-            SelectLocation(e.data.name);
-        });
         if (callback){
             callback();
         }

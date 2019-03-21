@@ -158,18 +158,23 @@ function ExportChart(exportData){
     if (penArray.length > 0){
         document.getElementById("msgAddaPen").classList.add("hide");
         document.getElementById("chart").classList.remove("hide");
-        GetPenData(penArray, trend.startTime, trend.endTime, exportData.sampleRate, (result) => {
+        GetPenData(penArray, trend.startTime, trend.endTime, exportData.sampleRate, (err, result) => {
             ////console.log(result);
             ////console.log(result.recordset[0]);
-            var csvData = convertRecordSetToCSV({ data: result.recordset });
-            ////console.log(csvData);
-            
-            fs.writeFile(exportData.fileName, csvData, function(err) {
-                if(err) {
-                    return console.log(err);
-                }
-                ShowOKMessageBox("The CSV file was saved!");
-            }); 
+            if (err){
+                ShowWarningMessageBox("Failed to get data. No CSV file created.");
+            }
+            else{
+                var csvData = convertRecordSetToCSV({ data: result.recordset });
+                ////console.log(csvData);
+                
+                fs.writeFile(exportData.fileName, csvData, function(err) {
+                    if(err) {
+                        return console.log(err);
+                    }
+                    ShowOKMessageBox("The CSV file was saved!");
+                }); 
+            }
         });
     }
 }
@@ -204,8 +209,8 @@ function ShowExportWindow() {
       parent: remote.getCurrentWindow(),
       ////frame: false,
       modal: true,
-      resizable: true,
-      width: 600, height: 200,
+      resizable: false,
+      width: 600, height: 250,
       x: xPos, y: yPos
     });
   
@@ -228,119 +233,123 @@ function UpdateChart(callback){
     if (penArray.length > 0){
         document.getElementById("msgAddaPen").classList.add("hide");
         document.getElementById("chart").classList.remove("hide");
-        GetPenData(penArray, trend.startTime, trend.endTime, GetInterval(), (result) => {
-        console.log(result);
-        console.log(result.recordset[0]);
-        var labels = [];
-        result.recordset.forEach(record => {
-            var multiLineLbl = record.time.split(" ");
-            labels.push(multiLineLbl);
-        });
-        console.log(labels);
-        var datasets = [];
-        var yAxes = [];
-        var x = 0;
-        trend.pens.forEach(pen => {
-            if ((pen.name != "Default") && (pen.name != "")) {
-                console.log("getting data for '" + pen.name + "'");
-                var data = [];
-                result.recordset.forEach(record => {
-                    data.push(record[pen.name]);
-                });
-                var dataSet = {
-                    label: pen.name, 
-                    data: data, 
-                    borderColor: pen.color,
-                    borderWidth: ((pen.name == selectedPen) ? 3 : 1),
-                    backgroundColor: pen.color,
-                    fill: false,
-                    yAxisID: pen.name,
-                    pointRadius: 0,
-                    steppedLine: true
-                };
-                datasets.push(dataSet);
-                var ticks = {};
-                if (pen.rangeAuto){
-                    ticks = {
-                        fontColor: "white",
-                    }
-                }
-                else{
-                    ticks = {
-                        fontColor: "white",
-                        min: pen.min,
-                        max: pen.max
-                    }
-                }
-                console.log("ticks=");
-                console.log(ticks);
-                var yAxis = {
-                    id: pen.name,
-                    display: (pen.name == selectedPen),
-                    scaleLabel: {
-                        fontColor: "white",
-                        fontSize: 14,
-                        display: true,
-                        labelString: pen.description
-                    },
-                    gridLines: {
-                        color: "#999999",
-                        display: true
-                    },
-                    ticks : ticks,
-                    afterDataLimits: (axis) => {
-                        var pen = trend.pens.find(x => x.name === axis.id);
-                        if (pen){
-                            if (pen.rangeAuto){
-                                pen.min = axis.min;
-                                pen.max = axis.max;
-                            }
+        GetPenData(penArray, trend.startTime, trend.endTime, GetInterval(), (err, result) => {
+            if (err){
+                ShowWarningMessageBox("Failed to get data.");
+                return;
+            }    
+            console.log(result);
+            console.log(result.recordset[0]);
+            var labels = [];
+            result.recordset.forEach(record => {
+                var multiLineLbl = record.time.split(" ");
+                labels.push(multiLineLbl);
+            });
+            console.log(labels);
+            var datasets = [];
+            var yAxes = [];
+            var x = 0;
+            trend.pens.forEach(pen => {
+                if ((pen.name != "Default") && (pen.name != "")) {
+                    console.log("getting data for '" + pen.name + "'");
+                    var data = [];
+                    result.recordset.forEach(record => {
+                        data.push(record[pen.name]);
+                    });
+                    var dataSet = {
+                        label: pen.name, 
+                        data: data, 
+                        borderColor: pen.color,
+                        borderWidth: ((pen.name == selectedPen) ? 3 : 1),
+                        backgroundColor: pen.color,
+                        fill: false,
+                        yAxisID: pen.name,
+                        pointRadius: 0,
+                        steppedLine: true
+                    };
+                    datasets.push(dataSet);
+                    var ticks = {};
+                    if (pen.rangeAuto){
+                        ticks = {
+                            fontColor: "white",
                         }
                     }
-                };
-                yAxes.push(yAxis);
-                x += 1;
-            }
-        });
-        
-        chartConfig = {
-            type: 'line',
-            data: {
-               labels: labels,
-               datasets: datasets
-            },
-            responsive : true,
-            options: {
-                legend: {
-                    display: false
-                },
-                animation: {
-                    duration: 0                    
-                },
-                scales: {
-                    xAxes: [
-                        {
-                            gridLines: {
-                                color: "#aaaaaa",
-                                display: true
-                            },
-                            ticks : {
-                                fontColor: "white",
-                                maxTicksLimit: 7.1,
-                                maxRotation: 0
+                    else{
+                        ticks = {
+                            fontColor: "white",
+                            min: pen.min,
+                            max: pen.max
+                        }
+                    }
+                    console.log("ticks=");
+                    console.log(ticks);
+                    var yAxis = {
+                        id: pen.name,
+                        display: (pen.name == selectedPen),
+                        scaleLabel: {
+                            fontColor: "white",
+                            fontSize: 14,
+                            display: true,
+                            labelString: pen.description
+                        },
+                        gridLines: {
+                            color: "#999999",
+                            display: true
+                        },
+                        ticks : ticks,
+                        afterDataLimits: (axis) => {
+                            var pen = trend.pens.find(x => x.name === axis.id);
+                            if (pen){
+                                if (pen.rangeAuto){
+                                    pen.min = axis.min;
+                                    pen.max = axis.max;
+                                }
                             }
                         }
-                    ],
-                    yAxes: yAxes
+                    };
+                    yAxes.push(yAxis);
+                    x += 1;
                 }
-            }
-        };
-        ChartResize(()=>{
-            if (callback){
-                console.log("Executing UpdateChart callback.");
-                callback();
-            }
-        });
+            });
+            
+            chartConfig = {
+                type: 'line',
+                data: {
+                labels: labels,
+                datasets: datasets
+                },
+                responsive : true,
+                options: {
+                    legend: {
+                        display: false
+                    },
+                    animation: {
+                        duration: 0                    
+                    },
+                    scales: {
+                        xAxes: [
+                            {
+                                gridLines: {
+                                    color: "#aaaaaa",
+                                    display: true
+                                },
+                                ticks : {
+                                    fontColor: "white",
+                                    maxTicksLimit: 7.1,
+                                    maxRotation: 0
+                                }
+                            }
+                        ],
+                        yAxes: yAxes
+                    }
+                }
+            };
+            ChartResize(()=>{
+                if (callback){
+                    console.log("Executing UpdateChart callback.");
+                    callback();
+                }
+            });
         });
     
     }
@@ -458,25 +467,34 @@ function ShowPickPenWindow() {
     var xPos = pos[0] + (size[0]/2) - 300;
     var yPos = pos[1] + (size[1]/2) - 250;
 
-    let win = new remote.BrowserWindow({
-      parent: remote.getCurrentWindow(),
-      ////frame: false,
-      modal: true,
-      width: 600, height: 500,
-      x: xPos, y: yPos
+    loadSettingsfromFile(settingsFile, ()=>{
+        var winWidth = 600;
+        var winHeight = 500;
+        console.log(settings);
+        if (settings["pickPen"]){
+            winWidth = settings["pickPen"][0];
+            winHeight = settings["pickPen"][1];
+        }
+        
+        let win = new remote.BrowserWindow({
+            parent: remote.getCurrentWindow(),
+            ////frame: false,
+            modal: true,
+            width: winWidth, height: winHeight,
+            x: xPos, y: yPos
+          });
+        
+          var theUrl = 'file://' + __dirname + '/app_Trend/pickPen.html'
+          console.log('url', theUrl);
+        
+          win.loadURL(theUrl);
+          //win.webContents.openDevTools();
+          win.setMenuBarVisibility(false);
+          
+          win.webContents.on('did-finish-load', () => {
+            win.webContents.send('penData', trend.pens.find(x => x.name === selectedPen));
+          });
     });
-  
-    var theUrl = 'file://' + __dirname + '/app_Trend/pickPen.html'
-    console.log('url', theUrl);
-  
-    win.loadURL(theUrl);
-    //win.webContents.openDevTools();
-    win.setMenuBarVisibility(false);
-    
-    win.webContents.on('did-finish-load', () => {
-      win.webContents.send('penData', trend.pens.find(x => x.name === selectedPen));
-    });
-
 };
 
 function ShowPenPropertiesWindow() {
@@ -491,7 +509,7 @@ function ShowPenPropertiesWindow() {
       ////frame: false,
       modal: true,
       resizable: false,
-      width: 410, height: 310,
+      width: 410, height: 360,
       x: xPos, y: yPos
     });
   
@@ -543,7 +561,7 @@ function ShowPickTimeRangeWindow() {
       parent: remote.getCurrentWindow(),
       ////frame: false,
       modal: true,
-      width: 340, height: 400,
+      width: 340, height: 450,
       resizable: false,
       x: xPos,
       y: yPos
@@ -633,17 +651,6 @@ function RemovePenButton(penName){
     console.log("Executing RemovePenButton....");
     var divButton = document.getElementById(penName).parentElement;
     divButton.remove();
-}
-
-function ShowOKMessageBox(message){
-    const options = {
-        type: "info",
-        title: "Information",
-        buttons: ["OK"],
-        message: message,
-      };
-    
-      dialog.showMessageBox(null, options);
 }
 
 //#endregion PAGE ANIMATION FUNCTIONS

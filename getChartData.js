@@ -39,9 +39,9 @@ function GetPenData(tagNames, startTime, endTime, interval, callback){
             ')
             `;
         console.log(sqlQuery);
-        ExecSQLQuery(sqlQuery, (recordsets) =>{
+        ExecSQLQuery(sqlQuery, (err, recordsets) =>{
             if (callback){
-                callback(recordsets);
+                callback(err, recordsets);
             }
         });
         
@@ -51,18 +51,19 @@ function GetPenData(tagNames, startTime, endTime, interval, callback){
 };
 
 function GetLocations(callback){
-    console.log("getting tags");
+    console.log("getting locations");
     try {
         var sqlQuery = `
             SELECT Distinct(Location) As Location 
             FROM OPENQUERY(` + config.fin + `, '
             SELECT Location 
             FROM DataPoints 
-            ')
+            ') ORDER BY Location ASC
             `;
-        ExecSQLQuery(sqlQuery, (recordsets) =>{
+        ExecSQLQuery(sqlQuery, (err, recordsets) =>{
+            console.log(err);
             if (callback){
-                callback(recordsets);
+                callback(err, recordsets);
             }
         });
     } catch (err) {
@@ -80,9 +81,9 @@ function GetTags(callback){
             FROM DataPoints 
             ')
             `;
-        ExecSQLQuery(sqlQuery, (recordsets) =>{
+        ExecSQLQuery(sqlQuery, (err, recordsets) =>{
             if (callback){
-                callback(recordsets);
+                callback(err, recordsets);
             }
         });
     } catch (err) {
@@ -101,9 +102,9 @@ function GetTagsbyLocation(location, callback){
             WHERE Location=''` + location + `''
             ')
             `;
-        ExecSQLQuery(sqlQuery, (recordsets) =>{
+        ExecSQLQuery(sqlQuery, (err, recordsets) =>{
             if (callback){
-                callback(recordsets);
+                callback(err, recordsets);
             }
         });
     } catch (err) {
@@ -122,9 +123,9 @@ function GetTagDescription(tag, callback){
             WHERE Name = ''` + tag + `''
             ')
             `;
-        ExecSQLQuery(sqlQuery, (recordsets) =>{
+        ExecSQLQuery(sqlQuery, (err, recordsets) =>{
             if (callback){
-                callback(recordsets);
+                callback(err, recordsets);
             }
             return recordsets.recordset[0].Description;
         });

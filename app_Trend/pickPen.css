@@ -3,6 +3,9 @@
     --btnBoxTop_txColor: white;
     --btnBoxItem_bgColor: #a0a0a0;
     --btnBoxItem_txColor: black;
+    --btnSelected_bgColor: #08a9c5;
+    --btnSelected_txColor: black;
+    
 }
 
 :not(input):not(textarea),
@@ -108,11 +111,17 @@ body {
   border-bottom-right-radius:5px;
   border-top-left-radius:5px;
   border-bottom-left-radius:5px;
+  width: 120px;
 }
 
 .btn:hover {
   background-color: var(--btnBoxItem_bgColor);
   cursor: pointer; 
+}
+
+.btn_selected {
+  background: var(--btnSelected_bgColor) !important;
+  color: var(--btnSelected_txColor) !important;
 }
 
 .center {
@@ -151,6 +160,13 @@ body {
   background:var(--btnBoxTop_bgColor);
 }
 
+#lstLocations {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  overflow: scroll;
+}
+
 .datapoint{
   background-color:var(--btnBoxTop_bgColor);
   color: var(--btnBoxTop_txColor);
@@ -158,6 +174,16 @@ body {
 }
 
 .datapoint:hover{
+  background-color: var(--btnBoxItem_bgColor);
+  cursor: pointer; 
+}
+
+.location{
+  color: var(--btnBoxTop_txColor);
+  padding: 2px 2px 2px 5px;
+}
+
+.location:hover{
   background-color: var(--btnBoxItem_bgColor);
   cursor: pointer; 
 }

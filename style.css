@@ -276,7 +276,7 @@ html, body {
 }
 
 .btnSettings {
-    width: 150px;
+    width: 180px;
 }
 
 .stackVert {
@@ -314,19 +314,22 @@ html, body {
 .settingsLabel {
     margin-left: 5px;
     min-height: 30px;
-    width: 150px;
+    width: 180px;
     color: white;
     align-items: left;
+    font: 15px "Roboto", Helvetica, Arial, san-serif;
 }
 
 .inputEntry {
     height: 30px;
+    margin-top: 5px;
     margin-right: 10px;
-    width: 150px;
+    width: 180px;
     padding-left: 5px;
     color: black;
     text-align: center;
     border-radius: 5px;
+    font: 15px "Roboto", Helvetica, Arial, san-serif;
 }
 
 .inputEntry:hover {

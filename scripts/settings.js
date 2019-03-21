@@ -6,10 +6,16 @@ function saveSettingstoFile(settings) {
     var json = JSON.stringify(settings);
     fs.writeFileSync(settingsFile, json, "utf8");
 }
+
+function saveWindowSize(winName, winSize){
+    //winName = "<windowName>";
+    //winSize = [<width>, <height>];
+    settings[winName] = winSize;
+    saveSettingstoFile(settings);
+}
   
 /// Load settings from the .settings file.
 function loadSettingsfromFile(fName, callback) {
-    var settings;
     fs.readFile(fName, "utf8", function readFileCallback(err, data) {
         if (err) {
         console.log(err);
