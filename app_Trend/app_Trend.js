@@ -15,7 +15,7 @@ var pen =
         location: "Default"
     }];
 */
-const numSamples = 1000;
+const numSamples = 2000;
 var today = new Date;
 var nowString = moment().format(dateTimeFormat);
 var tenMinsAgo = moment().add(-10, "minutes").format(dateTimeFormat);
@@ -721,10 +721,6 @@ document.getElementById("lblChartRange").addEventListener("click", () =>{
     ShowPickTimeRangeWindow();
 });
 
-document.getElementById("trend_btnNew").addEventListener("click", () =>{
-
-});
-
 document.getElementById("trend_btnTimes").addEventListener("click", () =>{
     ShowPickTimeRangeWindow();
 });
@@ -801,7 +797,7 @@ document.getElementById("btnNow").addEventListener("click", () => {
 //#region NAV INCREMENT SELECT BUTTONS
 document.getElementById("btn10s").addEventListener("click", () => {
     navInc = 10;
-    SelectNavInc("btn1m");
+    SelectNavInc("btn10s");
 });
 document.getElementById("btn1m").addEventListener("click", () => {
     navInc = 60;
@@ -880,4 +876,6 @@ function convertRecordSetToCSV(args) {
 //#region INITIALIZATION CODE
 document.getElementById("lblChartRange").innerText = GetTrendTimeRange();
 html_titleTrend.innerText = trend.name;
+navInc = 600;
+SelectNavInc("btn10m");
 //#endregion INITIALIZATION CODE

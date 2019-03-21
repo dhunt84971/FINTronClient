@@ -5,7 +5,9 @@
     --btnBoxItem_txColor: black;
     --btnAppSelected_bgColor: #08a9c5;
     --btnAppSelected_txColor: black;
-    --divPenButtons_bgColor: #1f1f1f;
+    /*--divPenButtons_bgColor: #1f1f1f;*/
+    --divPenButtons_bgColor: black;
+    --divAppButtons_bgColor: #1f1f1f;
   }
 
 :not(input):not(textarea),
@@ -94,7 +96,7 @@ html, body {
 .top {
     height: 40px;
     width: 100%;
-    background: #2f2f2f;
+    background: var(--divPenButtons_bgColor);
     text-align: center;
     font: 20px "Helvetica Neue", Helvetica, Arial, san-serif;
     color: white;
@@ -103,11 +105,15 @@ html, body {
     padding: 3px;
 }
 
+.appNav {
+    background: var(--divAppButtons_bgColor);
+}
+
 .horDivider {
     display: flex;
     height:2px;
     background: #999;
-    margin: 3px;
+    margin: 0px;
 }
 
 .appWindow {
@@ -149,10 +155,11 @@ html, body {
 .center_right {
     min-width: 150px;
     background: var(--divPenButtons_bgColor);
+    background: black;
     display: flex;
     flex-direction: column;
     padding: 3px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .bottom_filler {
