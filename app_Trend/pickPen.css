@@ -177,13 +177,3 @@ body {
   background-color: var(--btnBoxItem_bgColor);
   cursor: pointer; 
 }
-
-.location{
-  color: var(--btnBoxTop_txColor);
-  padding: 2px 2px 2px 5px;
-}
-
-.location:hover{
-  background-color: var(--btnBoxItem_bgColor);
-  cursor: pointer; 
-}

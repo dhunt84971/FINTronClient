@@ -43,7 +43,6 @@ function SelectByInnerText(divID, inText){
 
 //#endregion PAGE ANIMATION FUNCTIONS
 
-
 //#region TAGLIST FUNCTIONS
 
 function SelectLocation(location){
@@ -109,12 +108,9 @@ document.body.addEventListener("click",function(e){
     }
 });
 
-document.body.addEventListener("click",function(e){
-    if(e.target && e.target.classList.contains("location")){
-        SelectByInnerText("lstLocations", e.target.innerText);
-        SelectLocation(e.target.innerText);
-    }
-});
+var locationSelected = function (text){
+    SelectLocation(text);
+}
 
 document.body.addEventListener("dblclick",function(e){
     if(e.target && e.target.classList.contains("datapoint")){
@@ -128,13 +124,7 @@ document.body.addEventListener("dblclick",function(e){
 electron.ipcRenderer.on('penData', (event, pen) => {
     loadDBConfig(()=>{
         init(()=>{
-            if (pen){
-                pickedPen = pen;
-                document.getElementById("txtTop_entry").innerText = pickedPen.name;    
-            }
-            else{
-                document.getElementById("txtTop_entry").innerText = "<Select a tag>";
-            }
+            document.getElementById("txtTop_entry").innerText = "<Select a tag>";
         });
     }); 
 });
@@ -157,6 +147,11 @@ document.getElementById("btnDone").addEventListener("click", () =>{
 
 //#region INITIALIZATION CODE
 
+var tvDiv = document.getElementById("lstLocations");
+
+var dv = new div_treeview(tvDiv, "\\");
+dv.onSelect(locationSelected);
+
 // Get the locations from the database and fill in the treeview.
 // This treeview will eventually be replaced with a custom written one.
 function init(callback){
@@ -166,22 +161,20 @@ function init(callback){
             return;
         }
         
-        console.log(data);
-        // Add code to parse the returned data into a tvLocations treeview data object.
-        //::TODO::
-
         if (err){
             ShowWarningMessageBox("Failed to get data.");
             return;
         }
-        console.log(data);
+        
         data.recordset.forEach(rec => {
-            AddItemtoDiv("lstLocations", rec.Location, "location");
+            //AddItemtoDiv("lstLocations", rec.Location, "location");
+            dv.addTVItem(tvDiv,rec.Location, false);
         });
 
         // Pick the first location.
-        SelectByInnerText("lstLocations", data.recordset[0].Location);
-        SelectLocation(data.recordset[0].Location);
+        //SelectByInnerText("lstLocations", data.recordset[0].Location);
+        //SelectLocation(data.recordset[0].Location);
+        dv.selectFirstItem();
         
         if (callback){
             callback();
