@@ -63,7 +63,7 @@ function GetFilename(){
 function MakeFilenameCSV(fName){
     if (fName.substr(fName.length-4,1) == "."){
         if (fName.substr(fName.length-4) != ".csv"){
-            return fName.substr(0, fName.length-5) + ".csv";
+            return fName.substr(0, fName.length-4) + ".csv";
         }
         return fName;
     }
