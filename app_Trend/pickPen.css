@@ -156,7 +156,7 @@ body {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  overflow: scroll;
+  overflow: auto;
   background:var(--btnBoxTop_bgColor);
 }
 
@@ -164,7 +164,7 @@ body {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  overflow: scroll;
+  overflow: auto;
 }
 
 .datapoint{
