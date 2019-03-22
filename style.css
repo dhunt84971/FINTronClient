@@ -243,6 +243,12 @@ html, body {
     overflow-x: hidden;
 }
 
+.btnPenColor{
+    height: 3px;
+    margin-top: 2px;
+    width: 110px;
+}
+
 #btnAddPen {
     width: 150px !important;
 }
@@ -259,11 +265,11 @@ html, body {
 }
 
 .btnPen_selected {
-    background-color: green !important;
+    border-color: white !important;
 }
 
 .btnProps_selected {
-    background-color: green !important;
+    border-color: white !important;
 }
 
 .btn {

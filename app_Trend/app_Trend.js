@@ -617,12 +617,13 @@ function SelectNavInc(buttonId){
 function AddPenDiv(Pen){
     console.log("Adding pen:");
     console.log(Pen);
-    var divBtn = "<div class='btn btnPen btnComboLeft' id='" + Pen.name + "' ";
+    var divBtn = "<div class='vbox btn btnPen btnComboLeft' id='" + Pen.name + "' ";
     divBtn += "title='" + Pen.description + "' ";
-    divBtn += "style='border-color:" + Pen.color + "' ";
-    divBtn += "onclick='btnPen_onclick(event)'>" + Pen.name + "</div>";
+    //divBtn += "style='border-color:" + Pen.color + "' ";
+    divBtn += "onclick='btnPen_onclick(event)'>" + Pen.name;
+    divBtn += "<div class='btnPenColor' style='background-color:" + Pen.color +"'></div></div>";
     divBtn += "<div class='btn btnProps btnComboRight' id='" + Pen.name +"_props' "
-    divBtn += "style='border-color:" + Pen.color + "' ";
+    //divBtn += "style='border-color:" + Pen.color + "' ";
     divBtn += "data-pen='" + Pen.name + "' ";  // This attribute will be used to get the pen name.
     divBtn += "title='Change properties' ";
     divBtn += "onclick='btnPenProps_onclick(event)'>...</div>";
