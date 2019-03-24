@@ -1,13 +1,16 @@
 function div_treeview(divTVElement, divTVDelimeter) {
 
     var onSelect_Callback;
+    var _expandedStyle = "div_treeview_arrow_up";
+    var _collapsedStyle = "div_treeview_arrow_down";
+    var _mkStyle = "div_treeview_marker";
 
     function addTVText(parent, text) {
         var newItem = document.createElement("div");
         //newItem.innerText = text;
         newItem.classList.add("div_treeview_item");
         newItem.classList.add("div_treeview_hbox");
-        newItem.innerHTML = "<div class='div_treeview_marker'>-</div>" + text;
+        newItem.innerHTML = "<div class='" + _mkStyle + " " + _expandedStyle + "'></div>" + text;
         parent.appendChild(newItem);
     }
 
@@ -33,6 +36,7 @@ function div_treeview(divTVElement, divTVDelimeter) {
                             tvItems.shift();
                             var newTVData = tvItems.join(divTVDelimeter);
                             addTVItem(newParent, newTVData, true);
+                            fixLastMarkers();
                         }
                         return;
                     }
@@ -52,6 +56,7 @@ function div_treeview(divTVElement, divTVDelimeter) {
                     tvItems.shift();
                     var newTVData = tvItems.join(divTVDelimeter);
                     addTVItem(newParent, newTVData, true);
+                    fixLastMarkers();
                 }
                 return;
             }
@@ -67,13 +72,14 @@ function div_treeview(divTVElement, divTVDelimeter) {
     function onSelect(callback){
         onSelect_Callback = callback;
         divTVElement.ownerDocument.addEventListener("click", (e)=>{
+            console.log(e.target);
             if (e.target.classList.contains("div_treeview_item")){
                 removeAllSelected(divTVElement);
                 e.target.classList.add("div_treeview_selected")
                 callback(getFullPath(e.target));  
             }
-            else if (e.target.classList.contains("div_treeview_marker")){
-                if (e.target.innerText == "+"){
+            else if (e.target.classList.contains(_mkStyle)){
+                if (e.target.classList.contains(_collapsedStyle)){
                     expand(e.target.parentNode);
                 }
                 else{
@@ -109,8 +115,8 @@ function div_treeview(divTVElement, divTVDelimeter) {
         var noParent = false;
         var divParent;
         while(!noParent){
-            console.log("Found innertext = '" + divItem.innerText.substr(1).trim() + "'");
-            fullPath.unshift(divItem.innerText.substr(1).trim()); //Inner text will have the marker on it.
+            console.log("Found innertext = '" + divItem.innerText.trim() + "'");
+            fullPath.unshift(divItem.innerText.trim()); //Inner text will have the marker on it.
             try{
                 divItem = divItem.parentNode.parentNode.children[0];
                 if (divItem.parentNode === divTVElement){
@@ -125,19 +131,22 @@ function div_treeview(divTVElement, divTVDelimeter) {
     }
 
     function collapse(divItem){
+        console.log("collapsing:");
+        console.log(divItem);
         divItem.classList.add("div_treeview_children_hidden");
         var marker = divItem.children[0];
-        marker.innerText = "+";
+        if (marker.classList.contains(_expandedStyle)){
+            marker.classList.remove(_expandedStyle);
+            marker.classList.add(_collapsedStyle);
+        }
         var divParent = divItem.parentNode;
         var children = divParent.children;
-        var noChildren = true;
         for (var i=0; i<children.length; i++){
             if (!children[i].classList.contains("div_treeview_children_hidden")){
                 children[i].classList.add("div_treeview_collapsed");
                 noChildren = false;
             }
         }
-        noChildren ? marker.innerText = "-" : null;
     }
 
     function collapseAll(divParent){
@@ -146,7 +155,7 @@ function div_treeview(divTVElement, divTVDelimeter) {
             divParent = divTVElement;
         }
         // Set all markers to "-""
-        if (divParent.classList.contains("div_treeview_marker")){
+        if (divParent.classList.contains(_mkStyle)){
             collapse(divParent.parentNode);
         }
         // Recurse through the children.
@@ -161,9 +170,12 @@ function div_treeview(divTVElement, divTVDelimeter) {
         if (!divParent){
             divParent = divTVElement;
         }
-        // Set all markers to "-""
-        if (divParent.classList.contains("div_treeview_marker")){
-            divParent.innerText = "-";
+        // Set all markers to exapnded.
+        if (divParent.classList.contains(_mkStyle)){
+            if (divParent.classList.contains(_collapsedStyle)){
+                divParent.classList.add(_expandedStyle);
+                divParent.classList.remove(_collapsedStyle);
+            }
         }
         // Remove all the hidden and collapse classes.
         divParent.classList.remove("div_treeview_children_hidden");
@@ -176,9 +188,12 @@ function div_treeview(divTVElement, divTVDelimeter) {
     }
 
     function expand(divItem){
+        console.log("expanding:");
+        console.log(divItem);
         divItem.classList.remove("div_treeview_children_hidden");
         var marker = divItem.children[0];
-        marker.innerText = "-";
+        marker.classList.add(_expandedStyle);
+        marker.classList.remove(_collapsedStyle);
         var divParent = divItem.parentNode;
         var children = divParent.children;
         for (var i=0; i<children.length; i++){
@@ -197,6 +212,24 @@ function div_treeview(divTVElement, divTVDelimeter) {
             }
         }
     }
+
+    function fixLastMarkers(divItem){
+        if (!divItem){
+            divItem = divTVElement;
+        }
+        if (divItem.classList.contains(_expandedStyle)){
+            console.log("found expanded marker.");
+            if(divItem.parentNode.parentNode.children.length == 1){
+                divItem.classList.remove(_expandedStyle);
+                divItem.classList.remove(_collapsedStyle);
+            }
+        }
+        var children = divItem.children;
+        for (var i=0;i<children.length; i++){
+            fixLastMarkers(children[i]);
+        }
+    }
+
 
     // Expose all public functions/objects here.
     this.loadItems = loadItems;

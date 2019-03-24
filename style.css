@@ -265,11 +265,11 @@ html, body {
 }
 
 .btnPen_selected {
-    border-color: white !important;
+    border-color: var(--btnAppSelected_bgColor) !important;
 }
 
 .btnProps_selected {
-    border-color: white !important;
+    border-color: var(--btnAppSelected_bgColor) !important;
 }
 
 .btn {

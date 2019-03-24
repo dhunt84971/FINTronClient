@@ -43,12 +43,32 @@
 }
 
 .div_treeview_marker {
+    margin-top: 2px;
     margin-right: 5px;
     width: 10px;
-    text-align: center;
+    height: 10px;
+    background-color: rgb(88, 88, 88);
 }
 
 .div_treeview_marker:hover {
     background-color: #08a9c5;
     cursor: pointer;
+}
+
+.div_treeview_arrow_up {
+    width: 0 !important; 
+    height: 0!important; 
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid rgb(51, 51, 51);
+    background-color: transparent !important;
+}
+
+.div_treeview_arrow_down {
+    width: 0 !important; 
+    height: 0 !important; 
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid rgb(51, 51, 51);;
+    background-color: transparent !important;
 }
