@@ -6,7 +6,7 @@ let win;
 
 function createWindow() {
   // Create the browser window.
-  win = new BrowserWindow({ width: 900, height: 600 });
+  win = new BrowserWindow({ width: 900, height: 600, show:false });
 
   // and load the index.html of the app.
   win.loadFile("index.html");
@@ -19,6 +19,9 @@ function createWindow() {
   // Open the DevTools.
   //win.webContents.openDevTools()
 
+  win.once('ready-to-show', () => {
+    win.show()
+  });
   // Emitted when the window is closed.
   win.on("closed", () => {
     // Dereference the window object, usually you would store windows

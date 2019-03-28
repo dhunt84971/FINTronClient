@@ -33,7 +33,7 @@ function loadDBConfig(callback){
         if (!err) {
             console.log("Read settings.");
             console.log(settings);
-            // loadup the config object for the applciation.
+            // loadup the config object for the application.
             config.server = settings.host;
             config.database = settings.database;
             config.user = settings.user;

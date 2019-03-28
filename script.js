@@ -63,5 +63,4 @@ document.getElementById("btnAppAbout").addEventListener("click", () => {
 SelectAppBtn("btnAppTrend");
 SelectAppWindow("winTrend");
 loadDBConfig(); // Call to settings.loadDBConfig() //
-
 //#endregion INITIALIZATION CODE

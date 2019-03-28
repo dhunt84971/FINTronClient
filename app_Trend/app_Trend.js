@@ -211,7 +211,8 @@ function ShowExportWindow() {
       modal: true,
       resizable: false,
       width: 600, height: 250,
-      x: xPos, y: yPos
+      x: xPos, y: yPos,
+      show: false
     });
   
     var theUrl = 'file://' + __dirname + '/app_Trend/export.html'
@@ -224,6 +225,11 @@ function ShowExportWindow() {
     win.webContents.on('did-finish-load', () => {
       win.webContents.send('trendData', trend);
     });
+
+    win.once('ready-to-show', () => {
+        win.show()
+    });
+      
 
 };
 
@@ -510,7 +516,8 @@ function ShowPenPropertiesWindow() {
       modal: true,
       resizable: false,
       width: 410, height: 360,
-      x: xPos, y: yPos
+      x: xPos, y: yPos,
+      show: false
     });
   
     var theUrl = 'file://' + __dirname + '/app_Trend/penProperties.html'
@@ -522,6 +529,10 @@ function ShowPenPropertiesWindow() {
     
     win.webContents.on('did-finish-load', () => {
       win.webContents.send('penData', trend.pens.find(x => x.name === selectedPen));
+    });
+    
+    win.once('ready-to-show', () => {
+        win.show()
     });
 
 };
