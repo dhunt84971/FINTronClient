@@ -39,6 +39,7 @@ document.getElementById("btnSettingsApply").addEventListener("click", ()=>{
     config.fin = settings.fin;
 });
 
+// Test SQL connection using the settings entered.
 document.getElementById("btnTestSQLConnection").addEventListener("click", ()=>{
     verifySQLConnection((result) =>{
         if (result){
