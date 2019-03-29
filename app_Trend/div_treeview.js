@@ -93,7 +93,7 @@ function div_treeview(divTVElement, divTVDelimeter) {
         removeAllSelected(divTVElement);
         var firstItem = divTVElement.children[0].children[0];
         firstItem.classList.add("div_treeview_selected")
-        onSelect_Callback(firstItem.innerText.substr(1).trim())
+        onSelect_Callback(firstItem.innerText);
     }
 
     function onDblClick(callback){
