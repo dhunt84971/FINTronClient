@@ -1,8 +1,8 @@
 function div_treeview(divTVElement, divTVDelimeter) {
 
     var onSelect_Callback;
-    var _expandedStyle = "div_treeview_arrow_up";
-    var _collapsedStyle = "div_treeview_arrow_down";
+    var _expandedStyle = "div_treeview_arrow_dnrt";
+    var _collapsedStyle = "div_treeview_arrow_right";
     var _mkStyle = "div_treeview_marker";
 
     function addTVText(parent, text) {
@@ -90,10 +90,12 @@ function div_treeview(divTVElement, divTVDelimeter) {
     }
 
     function selectFirstItem(){
-        removeAllSelected(divTVElement);
-        var firstItem = divTVElement.children[0].children[0];
-        firstItem.classList.add("div_treeview_selected")
-        onSelect_Callback(firstItem.innerText);
+        if (divTVElement.innerHTML !=""){
+            removeAllSelected(divTVElement);
+            var firstItem = divTVElement.children[0].children[0];
+            firstItem.classList.add("div_treeview_selected");
+            if (onSelect_Callback) onSelect_Callback(firstItem.innerText);
+        }
     }
 
     function onDblClick(callback){
@@ -106,6 +108,17 @@ function div_treeview(divTVElement, divTVDelimeter) {
                     collapse(e.target);
                 }
                 callback(getFullPath(e.target));
+            }
+        });
+    }
+
+    function onRightClick(callback){
+        divTVElement.ownerDocument.addEventListener("contextmenu", (e)=>{
+            if (e.target.classList.contains("div_treeview_item")){
+                if (onSelect_Callback){
+                    onSelect_Callback(getFullPath(e.target));
+                }
+                callback(e, getFullPath(e.target));
             }
         });
     }
@@ -123,7 +136,7 @@ function div_treeview(divTVElement, divTVDelimeter) {
                     noParent = true;
                 }
             }
-            catch{
+            catch(err){
                 noParent = true;
             }
         }
@@ -217,11 +230,13 @@ function div_treeview(divTVElement, divTVDelimeter) {
         if (!divItem){
             divItem = divTVElement;
         }
-        if (divItem.classList.contains(_expandedStyle)){
-            console.log("found expanded marker.");
+        if (divItem.classList.contains(_mkStyle)){
             if(divItem.parentNode.parentNode.children.length == 1){
                 divItem.classList.remove(_expandedStyle);
                 divItem.classList.remove(_collapsedStyle);
+            }
+            else{
+                divItem.classList.add(_expandedStyle);
             }
         }
         var children = divItem.children;
@@ -236,6 +251,7 @@ function div_treeview(divTVElement, divTVDelimeter) {
     this.addTVItem = addTVItem;
     this.onSelect = onSelect;
     this.onDblClick = onDblClick;
+    this.onRightClick = onRightClick;
     this.expandAll = expandAll;
     this.collapseAll = collapseAll;
     this.selectFirstItem = selectFirstItem;
