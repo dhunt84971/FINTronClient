@@ -228,7 +228,7 @@ function ShowExportWindow() {
         show: false
     });
 
-    var theUrl = 'file://' + __dirname + '/app_Trend/export.html'
+    var theUrl = 'file://' + __dirname + '/app_Trend/export.html';
     console.log('url', theUrl);
 
     win.loadURL(theUrl);
@@ -240,8 +240,8 @@ function ShowExportWindow() {
     });
 
     win.once('ready-to-show', () => {
-        win.show()
-    });
+        win.show();
+    })
 
 
 };
@@ -357,6 +357,14 @@ function UpdateChart(callback) {
                             }
                         }],
                         yAxes: yAxes
+                    },
+                    tooltips: {
+                        mode: "index",
+                        intersect: false
+                    },
+                    hover: {
+                        mode: "index",
+                        intersect: true
                     }
                 }
             };
@@ -517,7 +525,7 @@ function ShowPickPenWindow() {
             win.show()
         });
     });
-};
+}
 
 function ShowPenPropertiesWindow() {
     // Get the current window size and position.
@@ -553,7 +561,7 @@ function ShowPenPropertiesWindow() {
         win.show()
     });
 
-};
+}
 
 //#endregion PEN FUNCTIONS
 
@@ -621,7 +629,7 @@ function ShowPickTimeRangeWindow() {
         win.show()
     });
 
-};
+}
 
 function ChangeStartTime(increment) {
     var newTime = moment(trend.startTime).add(increment, "seconds");

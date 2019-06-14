@@ -1,6 +1,6 @@
 var mssql = require("mssql");
 
-function ExecSQLQuery(sqlQuery, callback){
+function execSQLQuery(sqlQuery, callback){
     const pool = new mssql.ConnectionPool(config);
     var conn = pool;
     
@@ -28,7 +28,7 @@ function ExecSQLQuery(sqlQuery, callback){
 }
 
 function verifySQLConnection(callback){
-    ExecSQLQuery("SELECT getdate()", (err, recordsets)=>{
+    execSQLQuery("SELECT getdate()", (err, recordsets)=>{
         if (err){
             if (callback){
                 callback(false);

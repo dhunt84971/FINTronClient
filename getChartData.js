@@ -39,7 +39,7 @@ function GetPenData(tagNames, startTime, endTime, interval, callback){
             ')
             `;
         console.log(sqlQuery);
-        ExecSQLQuery(sqlQuery, (err, recordsets) =>{
+        execSQLQuery(sqlQuery, (err, recordsets) =>{
             if (callback){
                 callback(err, recordsets);
             }
@@ -60,7 +60,7 @@ function GetLocations(callback){
             FROM DataPoints 
             ') ORDER BY Location ASC
             `;
-        ExecSQLQuery(sqlQuery, (err, recordsets) =>{
+        execSQLQuery(sqlQuery, (err, recordsets) =>{
             console.log(err);
             if (callback){
                 callback(err, recordsets);
@@ -81,7 +81,7 @@ function GetTags(callback){
             FROM DataPoints 
             ')
             `;
-        ExecSQLQuery(sqlQuery, (err, recordsets) =>{
+        execSQLQuery(sqlQuery, (err, recordsets) =>{
             if (callback){
                 callback(err, recordsets);
             }
@@ -102,7 +102,7 @@ function GetTagsbyLocation(location, callback){
             WHERE Location=''` + location + `''
             ')
             `;
-        ExecSQLQuery(sqlQuery, (err, recordsets) =>{
+        execSQLQuery(sqlQuery, (err, recordsets) =>{
             if (callback){
                 callback(err, recordsets);
             }
@@ -123,11 +123,28 @@ function GetTagDescription(tag, callback){
             WHERE Name = ''` + tag + `''
             ')
             `;
-        ExecSQLQuery(sqlQuery, (err, recordsets) =>{
+        execSQLQuery(sqlQuery, (err, recordsets) =>{
             if (callback){
                 callback(err, recordsets);
             }
             return recordsets.recordset[0].Description;
+        });
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+function getNow(callback){
+    console.log("getting now");
+    try {
+        var sqlQuery = `
+            SELECT FORMAT(getdate(), 'MM/dd/yyyy HH:mm:ss') AS Now
+            `;
+        execSQLQuery(sqlQuery, (err, recordsets) =>{
+            console.log(err);
+            if (callback){
+                callback(err, recordsets);
+            }
         });
     } catch (err) {
         console.log(err);
