@@ -842,10 +842,20 @@ document.getElementById("btnEndFuture").addEventListener("click", () => {
 
 document.getElementById("btnNow").addEventListener("click", () => {
     var diff_secs = (moment(trend.endTime, dateTimeFormat).diff(moment(trend.startTime, dateTimeFormat))) / 1000;
+    getNow((err, result) => {
+        //trend.endTime = moment().format(dateTimeFormat);
+        if (err) {
+            ShowWarningMessageBox("Failed to get data.");
+            return;
+        }
+        trend.endTime = result.recordset[0].Now;
+        trend.startTime = moment(trend.endTime, dateTimeFormat).add(-1 * diff_secs, "seconds").format(dateTimeFormat);
+        UpdateChart();
+    });
 
-    trend.endTime = moment().format(dateTimeFormat);
-    trend.startTime = moment().add(-1 * diff_secs, "seconds").format(dateTimeFormat);
-    UpdateChart();
+    //trend.endTime = moment().format(dateTimeFormat);
+    //trend.startTime = moment().add(-1 * diff_secs, "seconds").format(dateTimeFormat);
+    //UpdateChart();
 });
 
 //#endregion NAV BUTTONS

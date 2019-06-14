@@ -43,3 +43,20 @@ function verifySQLConnection(callback){
         }
     });
 }
+
+function getNow(callback){
+    console.log("getting now");
+    try {
+        var sqlQuery = `
+            SELECT FORMAT(getdate(), 'MM/dd/yyyy HH:mm:ss') AS Now
+            `;
+        execSQLQuery(sqlQuery, (err, recordsets) =>{
+            console.log(err);
+            if (callback){
+                callback(err, recordsets);
+            }
+        });
+    } catch (err) {
+        console.log(err);
+    }
+}

@@ -17,7 +17,7 @@ function createWindow() {
   win.setMenuBarVisibility(false);
   
   // Open the DevTools.
-  //win.webContents.openDevTools()
+  //win.webContents.openDevTools();
 
   win.once('ready-to-show', () => {
     win.show()
