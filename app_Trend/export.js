@@ -48,16 +48,16 @@ function GetSampleRate(){
     }
 }
 
-function GetFilename(){
+async function GetFilename(){
     const options = {
         defaultPath: "./documents",
         filters: [
             { name: 'CSV Files', extensions: ['csv'] }
           ]
     }
-    dialog.showSaveDialog(null, options, (path) => {
-        txtFileName.value = MakeFilenameCSV(path);
-    });
+    const savePath = await dialog.showSaveDialog(null, options);
+    console.log(savePath.filePath);
+    txtFileName.value = MakeFilenameCSV(savePath.filePath);
 }
 
 function MakeFilenameCSV(fName){

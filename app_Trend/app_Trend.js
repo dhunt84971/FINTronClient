@@ -225,14 +225,18 @@ function ShowExportWindow() {
         height: 250,
         x: xPos,
         y: yPos,
-        show: false
+        show: false,
+        webPreferences: {
+            nodeIntegration: true,
+            webviewTag: true 
+            }  
     });
 
     var theUrl = 'file://' + __dirname + '/app_Trend/export.html';
     console.log('url', theUrl);
 
     win.loadURL(theUrl);
-    //win.webContents.openDevTools();
+    win.webContents.openDevTools();
     win.setMenuBarVisibility(false);
 
     win.webContents.on('did-finish-load', () => {
@@ -507,7 +511,11 @@ function ShowPickPenWindow() {
             height: winHeight,
             x: xPos,
             y: yPos,
-            show: false
+            show: false,
+            webPreferences: {
+                nodeIntegration: true,
+                webviewTag: true 
+                }    
         });
 
         var theUrl = 'file://' + __dirname + '/app_Trend/pickPen.html'
@@ -543,7 +551,11 @@ function ShowPenPropertiesWindow() {
         height: 360,
         x: xPos,
         y: yPos,
-        show: false
+        show: false,
+        webPreferences: {
+            nodeIntegration: true,
+            webviewTag: true 
+            }  
     });
 
     var theUrl = 'file://' + __dirname + '/app_Trend/penProperties.html'
@@ -611,7 +623,11 @@ function ShowPickTimeRangeWindow() {
         resizable: false,
         x: xPos,
         y: yPos,
-        show: false
+        show: false,
+        webPreferences: {
+            nodeIntegration: true,
+            webviewTag: true 
+            }  
     });
 
     var theUrl = 'file://' + __dirname + '/app_Trend/pickTimeRange.html'

@@ -6,18 +6,24 @@ let win;
 
 function createWindow() {
   // Create the browser window.
-  win = new BrowserWindow({ width: 900, height: 600, show:false });
+  win = new BrowserWindow({ width: 900, height: 600, show:false,
+    webPreferences: {
+    nodeIntegration: true,
+    webviewTag: true 
+    }    
+  });
 
   // and load the index.html of the app.
   win.loadFile("index.html");
 
   // Remove Window Menu
   //win.setMenu(null);
-  //win.autoHideMenuBar = true;
-  win.setMenuBarVisibility(false);
+  win.autoHideMenuBar = true;
+  //win.setMenuBarVisibility(false);
+  //win.removeMenu();
   
   // Open the DevTools.
-  //win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 
   win.once('ready-to-show', () => {
     win.show()
