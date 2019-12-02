@@ -236,7 +236,7 @@ function ShowExportWindow() {
     console.log('url', theUrl);
 
     win.loadURL(theUrl);
-    win.webContents.openDevTools();
+    //win.webContents.openDevTools();
     win.setMenuBarVisibility(false);
 
     win.webContents.on('did-finish-load', () => {
