@@ -8,8 +8,8 @@
     "name": "Dave Hunt",
     "email": "dhuntlinux@gmail.com"
   },
-  "homepage": "http://github.com",
-  "repository": "http://github.com",
+  "homepage": "https://github.com/dhunt84971/FINTronClient",
+  "repository": "https://github.com/dhunt84971/FINTronClient",
   "license": "MIT",
   "dependencies": {
     "chart.js": "^2.9.3",
