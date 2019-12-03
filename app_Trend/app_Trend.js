@@ -112,7 +112,7 @@ function SaveTrend(fname, callback) {
     });
 }
 
-function SaveAsTrend(callback) {
+async function SaveAsTrend(callback) {
     const options = {
         defaultPath: "./documents",
         filters: [{
@@ -124,15 +124,16 @@ function SaveAsTrend(callback) {
                 extensions: ['*']
             }
         ]
-    }
-    dialog.showSaveDialog(null, options, (path) => {
-        trend.name = StripFileName(path);
+    };
+    const result = await dialog.showSaveDialog(null, options);
+    if (result){
+        trend.name = StripFileName(result.filePath);
         html_titleTrend.innerText = trend.name;
-        SaveTrend(path);
-    });
+        SaveTrend(result.filePath);
+    }
 }
 
-function SelectTrend(callback) {
+async function SelectTrend(callback) {
     const options = {
         defaultPath: "./documents",
         filters: [{
@@ -145,12 +146,13 @@ function SelectTrend(callback) {
             }
         ],
         properties: ['openFile']
-    }
-    dialog.showOpenDialog(options, (fileNames) => {
-        if (fileNames.length == 1) {
-            LoadTrend(fileNames[0], () => {
+    };
+    const result = await dialog.showOpenDialog(null, options);
+    if (result) {
+        if (result.filePaths.length == 1) {
+            LoadTrend(result.filePaths[0], () => {
                 console.log(trend);
-                trend.name = StripFileName(fileNames[0]);
+                trend.name = StripFileName(result.filePaths[0]);
                 html_titleTrend.innerText = trend.name;
                 ReloadPens();
                 selectedPen = trend.pens[0].name;
@@ -159,7 +161,7 @@ function SelectTrend(callback) {
                 });
             });
         }
-    });
+    }
 }
 
 function ExportChart(exportData) {
