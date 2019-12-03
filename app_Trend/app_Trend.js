@@ -26,7 +26,7 @@ var trend = {
     pens: [],
     startTime: tenMinsAgo,
     endTime: nowString
-}
+};
 
 var penColors = [
     "rgb(255, 0, 0)", //red

@@ -26,7 +26,7 @@ function createWindow() {
   //win.webContents.openDevTools();
 
   win.once('ready-to-show', () => {
-    win.show()
+    win.show();
   });
   // Emitted when the window is closed.
   win.on("closed", () => {
