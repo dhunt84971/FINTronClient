@@ -24,6 +24,7 @@ function SelectAppWindow(id){
         els[i].style.display = "none";
     }
     document.getElementById(id).style.display="flex";
+    document.getElementById(id).classList.remove("hide");
 }
 
 //#endregion PAGE ANIMATION FUNCTIONS
