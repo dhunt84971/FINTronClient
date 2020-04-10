@@ -109,22 +109,26 @@ function UpdateChart(callback) {
                     };
                     datasets.push(dataSet);
                     var ticks = {};
+                    var stepSize = (pen.max - pen.min ) /10;
                     if (pen.rangeAuto) {
                         ticks = {
-                            fontColor: "black",
+                            fontColor: "black"
+                            //stepSize: stepSize
                         }
                     } else {
                         ticks = {
                             fontColor: "black",
                             min: pen.min,
                             max: pen.max
+                            //stepSize: stepSize
                         }
                     }
                     console.log("ticks=");
                     console.log(ticks);
                     var yAxis = {
                         id: pen.name,
-                        display: (pen.name == selectedPen),
+                        //display: (pen.name == selectedPen),
+                        display: true,
                         scaleLabel: {
                             fontColor: "black",
                             fontSize: 14,
@@ -133,7 +137,7 @@ function UpdateChart(callback) {
                         },
                         gridLines: {
                             color: "#999999",
-                            display: true
+                            display: (pen.name == selectedPen)
                         },
                         ticks: ticks,
                         afterDataLimits: (axis) => {
