@@ -6,7 +6,8 @@ let win;
 
 function createWindow() {
   // Create the browser window.
-  win = new BrowserWindow({ width: 900, height: 600, show:false, backgroundColor: "#fff",
+  win = new BrowserWindow({ 
+    width: 900, height: 600, show:false, backgroundColor: "#fff",
     webPreferences: {
     nodeIntegration: true,
     webviewTag: true 
@@ -18,8 +19,8 @@ function createWindow() {
 
   // Remove Window Menu
   //win.setMenu(null);
-  win.autoHideMenuBar = true;
-  //win.setMenuBarVisibility(false);
+  //win.autoHideMenuBar = true;
+  win.setMenuBarVisibility(false);
   //win.removeMenu();
   
   // Open the DevTools.
