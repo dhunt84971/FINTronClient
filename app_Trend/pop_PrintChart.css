@@ -22,7 +22,7 @@
 
 html,
 body {
-  height: 100%;
+  /*height: 100%;*/
 }
 
 .container {
@@ -46,7 +46,6 @@ body {
   flex: 0 0 auto;
   align-items: center;
   padding: 5px;
-  background: gray;
 }
 
 .hboxFill {
@@ -62,7 +61,7 @@ body {
   flex-direction: column;
   flex: 1 1 auto;
   padding: 5px;
-  background: gray;
+  
 }
 
 .inputEntry {
@@ -146,10 +145,15 @@ body {
 }
 
 #divchart {
-    display: flex;
-    flex: 1 0 auto;
-    overflow: hidden;
+    overflow: scroll;
     background-color: white;
+    width: 1600;
+    height: 1000;
+}
+
+#chart {
+    width: 1600;
+    height: 1000;
 }
 
 #btnPrint {
@@ -160,9 +164,10 @@ canvas {
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
-    min-width: 0;
     margin-top: 10px;
     padding: 10px;
+    width:1600;
+    height:1000;
   }
 
 .trend_bottom_filler {

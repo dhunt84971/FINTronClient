@@ -8,21 +8,18 @@
 </head>
   
   <body>
-    <div class="container">
-        <div class="hboxFill noMargin noPadding">
-            <div class="vboxFill noMargin noPadding overflowAuto">
-                <div class="trend_center">
-                    <div class="trend_center_left">
-                        <div id="divchart">
-                            <canvas id="chart"></canvas>
-                        </div>
-                        <div class="trend_bottom_filler"></div>
-                    </div>
-                </div>
-                <div class="btn" id="btnPrint">Print</div>
-            </div>
-        </div>
+    <div class="vboxFill appWindow noMargin noPadding" >
+      <div class="hbox">
+        <div class="btn" id="btnPrint">Print to PDF</div>  
+        <div class="btn" id="btnFullscreen">Fullscreen</div>
+        <div class="btn" id="btnCancel">Close</div>
+      </div>
+    
+      <div>
+        <canvas id="chart" width="1600" height="1000"></canvas>
+      </div>
     </div>
+    
     <script src="../scripts/thirdParty/Chart.js"></script>
     <script src="../scripts/thirdParty/utils.js"></script>
     <script src="../scripts/globals.js"></script>

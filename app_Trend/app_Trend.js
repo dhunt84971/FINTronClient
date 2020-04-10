@@ -675,8 +675,8 @@ function ShowPrintChartWindow() {
     // Get the current window size and position.
     const pos = remote.getCurrentWindow().getPosition();
     const size = remote.getCurrentWindow().getSize();
-    var xPos = pos[0] + (size[0] / 2) - 300;
-    var yPos = pos[1] + (size[1] / 2) - 250;
+    var xPos = pos[0] + (size[0] / 2) - 400;
+    var yPos = pos[1] + (size[1] / 2) - 300;
 
     let win = new remote.BrowserWindow({
         parent: remote.getCurrentWindow(),
@@ -691,14 +691,14 @@ function ShowPrintChartWindow() {
         webPreferences: {
             nodeIntegration: true,
             webviewTag: true 
-            }  
+            }
     });
 
     var theUrl = 'file://' + __dirname + '/app_Trend/pop_PrintChart.html'
     console.log('url', theUrl);
 
     win.loadURL(theUrl);
-    win.webContents.openDevTools();
+    //win.webContents.openDevTools();
     
     win.setMenuBarVisibility(false);
 

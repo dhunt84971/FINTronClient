@@ -1,8 +1,10 @@
 //#region GLOBAL VARIABLES
 var printTrend = {};
 var printchartConfig = {};
-var printchartDoc = document.getElementById("chart").getContext("2d");
-var printChart = new Chart(printchartDoc, printchartConfig);
+var printCanvas = document.querySelector('#chart');
+
+var printchartDoc = printCanvas.getContext("2d");
+var printChart;
 const numSamples = 2000;
 var selectedPen;
 
@@ -18,7 +20,6 @@ var config = {
 //#region PRINT FUNCTIONS
 function printCharttoPDF(){
     //UpdatePrintChart(()=>{
-        var printCanvas = document.querySelector('#chart');
         //printCanvas.height = 600;
         //printCanvas.width = 1200;
         //printChart.resize();
@@ -38,11 +39,15 @@ function printCharttoPDF(){
 //#region CHART DISPLAY FUNCTIONS
 function ChartResize(callback) {
     console.log("Resizing chart.")
-    document.getElementById("chart").style.display = "none";
-    printChart.destroy();
-    document.getElementById("chart").height = "50px";
+    //document.getElementById("chart").style.display = "none";
+    //printChart.destroy();
+    //document.getElementById("chart").height = "50px";
+    
     printChart = new Chart(printchartDoc, printchartConfig);
-    printChart.resize();
+    
+    printChart.canvas.parentNode.style.height = '1000px';
+    printChart.canvas.parentNode.style.width = '1600px';
+    //printChart.resize();
     if (callback) {
         callback();
     }
@@ -153,7 +158,7 @@ function UpdateChart(callback) {
                     labels: labels,
                     datasets: datasets
                 },
-                responsive: true,
+                responsive: false,
                 options: {
                     legend: {
                         display: true
@@ -232,11 +237,21 @@ electron.ipcRenderer.on('printTrend', (event, message) => {
 });
 
 window.addEventListener("resize", () => {
-    ChartResize();
+    //ChartResize();
 });
 
 document.getElementById("btnPrint").addEventListener("click", ()=>{
     printCharttoPDF();
+});
+
+document.getElementById("btnFullscreen").addEventListener("click", ()=>{
+    var window = remote.getCurrentWindow();
+    window.maximize();
+});
+
+document.getElementById("btnCancel").addEventListener("click", ()=>{
+    var window = remote.getCurrentWindow();
+    window.close();
 });
 
 //#endregion EVENT HANDLERS
