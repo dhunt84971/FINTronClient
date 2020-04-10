@@ -45,8 +45,7 @@ function ChartResize(callback) {
     
     printChart = new Chart(printchartDoc, printchartConfig);
     
-    printChart.canvas.parentNode.style.height = '1000px';
-    printChart.canvas.parentNode.style.width = '1600px';
+    printChart.canvas.parentNode.style.width = '1500px';
     //printChart.resize();
     if (callback) {
         callback();
@@ -247,6 +246,8 @@ document.getElementById("btnPrint").addEventListener("click", ()=>{
 document.getElementById("btnFullscreen").addEventListener("click", ()=>{
     var window = remote.getCurrentWindow();
     window.maximize();
+    window.setFullScreen(true);
+    console.log(window);
 });
 
 document.getElementById("btnCancel").addEventListener("click", ()=>{

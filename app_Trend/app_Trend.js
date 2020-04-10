@@ -679,9 +679,9 @@ function ShowPrintChartWindow() {
     var yPos = pos[1] + (size[1] / 2) - 300;
 
     let win = new remote.BrowserWindow({
-        parent: remote.getCurrentWindow(),
+        //parent: remote.getCurrentWindow(),
         ////frame: false,
-        modal: true,
+        //modal: true,
         resizable: true,
         width: 800,
         height: 600,
@@ -691,7 +691,7 @@ function ShowPrintChartWindow() {
         webPreferences: {
             nodeIntegration: true,
             webviewTag: true 
-            }
+            }        
     });
 
     var theUrl = 'file://' + __dirname + '/app_Trend/pop_PrintChart.html'
