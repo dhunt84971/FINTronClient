@@ -6,6 +6,7 @@ const { dialog } = require("electron").remote;
 const moment = require("moment");
 const ipc = require("electron").ipcRenderer;
 const fs = require("fs");
+const jsPDF = require("jspdf");
 
 const dateTimeFormat = "MM/DD/YYYY HH:mm:ss";
 

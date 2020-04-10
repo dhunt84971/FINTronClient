@@ -374,12 +374,14 @@ function UpdateChart(callback) {
                     }
                 }
             };
+
             ChartResize(() => {
                 if (callback) {
                     console.log("Executing UpdateChart callback.");
                     callback();
                 }
             });
+            
         });
 
     } else {
@@ -389,8 +391,6 @@ function UpdateChart(callback) {
     }
     document.getElementById("lblChartRange").innerText = GetTrendTimeRange();
 };
-
-
 
 //#endregion CHART FUNCTIONS
 
@@ -671,9 +671,48 @@ function ChangeEndTime(increment) {
 //#endregion TIME FUNCTIONS
 
 //#region PRINT FUNCTIONS
-function printCharttoPDF(){
+function ShowPrintChartWindow() {
+    // Get the current window size and position.
+    const pos = remote.getCurrentWindow().getPosition();
+    const size = remote.getCurrentWindow().getSize();
+    var xPos = pos[0] + (size[0] / 2) - 300;
+    var yPos = pos[1] + (size[1] / 2) - 250;
+
+    let win = new remote.BrowserWindow({
+        parent: remote.getCurrentWindow(),
+        ////frame: false,
+        modal: true,
+        resizable: true,
+        width: 800,
+        height: 600,
+        x: xPos,
+        y: yPos,
+        show: false,
+        webPreferences: {
+            nodeIntegration: true,
+            webviewTag: true 
+            }  
+    });
+
+    var theUrl = 'file://' + __dirname + '/app_Trend/pop_PrintChart.html'
+    console.log('url', theUrl);
+
+    win.loadURL(theUrl);
+    win.webContents.openDevTools();
     
+    win.setMenuBarVisibility(false);
+
+    win.webContents.on('did-finish-load', () => {
+        win.webContents.send('printTrend', {trend:trend, selectedPen:selectedPen} );
+    });
+
+    win.once('ready-to-show', () => {
+        win.show()
+    });
+
 }
+
+
 //#endregion PRINT FUNCTIONS
 
 //#region PAGE ANIMATION FUNCTIONS
@@ -824,7 +863,7 @@ document.getElementById("trend_btnExport").addEventListener("click", () => {
 });
 
 document.getElementById("trend_btnPrint").addEventListener("click", () => {
-    ShowExportWindow();
+    ShowPrintChartWindow();
 });
 
 

@@ -356,7 +356,7 @@ html, body {
 
 
 /* #region CHART */
-canvas{
+#chart{
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;

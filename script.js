@@ -58,6 +58,7 @@ document.getElementById("btnAppAbout").addEventListener("click", () => {
 });
 //#endregion APP NAV BUTTONS
 
+
 //#endregion EVENT HANDLERS
 
 //#region INITIALIZATION CODE

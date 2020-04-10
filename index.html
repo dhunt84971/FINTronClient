@@ -9,9 +9,6 @@
   
   <body>
     <!-- Hidden hiresolution canvas for chart printing. -->
-    <div style="height:0; width:0; overflow:hidden;">
-      <canvas id="hires-canvas" width="1200" height="600"></canvas>
-    </div>
     <div class="container">
       <div class="top appNav">
           <div class="btn btnApp hide" id="btnAppLogin">Login</div>
@@ -134,7 +131,10 @@
 
       <div class="appWindow" id="winAbout"></div>
     </div>
-  
+    <div style="height:0; width:0; overflow:hidden;">
+      <canvas id="print-chart" width="1200" height="600"></canvas>
+    </div>
+    
     <!-- Third Party Dependencies -->
     <script src="scripts/thirdParty/Chart.js"></script>
     <script src="scripts/thirdParty/utils.js"></script>

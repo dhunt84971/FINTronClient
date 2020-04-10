@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pen Properties</title>
+    <link rel="stylesheet" href="pop_PrintChart.css">
+</head>
+  
+  <body>
+    <div class="container">
+        <div class="hboxFill noMargin noPadding">
+            <div class="vboxFill noMargin noPadding overflowAuto">
+                <div class="trend_center">
+                    <div class="trend_center_left">
+                        <div id="divchart">
+                            <canvas id="chart"></canvas>
+                        </div>
+                        <div class="trend_bottom_filler"></div>
+                    </div>
+                </div>
+                <div class="btn" id="btnPrint">Print</div>
+            </div>
+        </div>
+    </div>
+    <script src="../scripts/thirdParty/Chart.js"></script>
+    <script src="../scripts/thirdParty/utils.js"></script>
+    <script src="../scripts/globals.js"></script>
+    <script src="../scripts/database.js"></script>
+    <script src="../scripts/settings.js"></script>
+    <script src="../getChartData.js"></script>
+    <script src="pop_PrintChart.js"></script>
+
+</body>
+</html>
