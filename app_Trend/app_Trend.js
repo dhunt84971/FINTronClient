@@ -670,6 +670,12 @@ function ChangeEndTime(increment) {
 }
 //#endregion TIME FUNCTIONS
 
+//#region PRINT FUNCTIONS
+function printCharttoPDF(){
+    
+}
+//#endregion PRINT FUNCTIONS
+
 //#region PAGE ANIMATION FUNCTIONS
 function SelectNavInc(buttonId) {
     console.log("Time navigation increment selected = " + buttonId);
@@ -816,6 +822,11 @@ document.getElementById("trend_btnNew").addEventListener("click", () => {
 document.getElementById("trend_btnExport").addEventListener("click", () => {
     ShowExportWindow();
 });
+
+document.getElementById("trend_btnPrint").addEventListener("click", () => {
+    ShowExportWindow();
+});
+
 
 //#region NAV BUTTONS
 document.getElementById("btnStartPast").addEventListener("click", () => {

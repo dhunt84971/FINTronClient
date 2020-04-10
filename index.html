@@ -8,6 +8,10 @@
 </head>
   
   <body>
+    <!-- Hidden hiresolution canvas for chart printing. -->
+    <div style="height:0; width:0; overflow:hidden;">
+      <canvas id="hires-canvas" width="1200" height="600"></canvas>
+    </div>
     <div class="container">
       <div class="top appNav">
           <div class="btn btnApp hide" id="btnAppLogin">Login</div>
@@ -30,6 +34,7 @@
         <div class="btn btnBar" id="trend_btnSaveAs">SaveAs</div>
         <div class="btn btnBar" id="trend_btnExport">Export</div>
         <div class="btn btnBar" id="trend_btnTimes">Times</div>
+        <div class="btn btnBar" id="trend_btnPrint">Print</div>
         <div class="hboxFill" id="titleTrend"></div>
       </div>
       <div class="center">
