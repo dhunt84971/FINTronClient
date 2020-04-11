@@ -10,7 +10,7 @@ var printRSchartConfig = {};
 var printRSCanvas = document.querySelector('#chartRS');
 var printRSchartDoc = printRSCanvas.getContext("2d");
 var printRSChart = new Chart(printRSchartDoc, printRSchartConfig);
-
+var penData;
 
 const numSamples = 2000;
 var selectedPen;
@@ -22,6 +22,9 @@ var config = {
     database: "",
     requestTimeout: 120000
 }
+
+var multiYAxis = true;
+
 //#endregion GLOBAL VARIABLES
 
 //#region PRINT FUNCTIONS
@@ -33,7 +36,7 @@ function printCharttoPDF(){
         var doc = new jsPDF('landscape');
         doc.setFontSize(10);
         doc.text(15, 8, printTrend.name);
-        doc.addImage(printCanvasImg, 'JPEG', 10, 20, 280, 200 );
+        doc.addImage(printCanvasImg, 'JPEG', 10, 20, 280, 190 );
         doc.save(printTrend.name.split(".")[0] + ".pdf");
     //});    
 }
@@ -55,8 +58,6 @@ function ChartResize(callback) {
 
     printChart = new Chart(printchartDoc, printchartConfig);
     printChart.canvas.parentNode.style.width = '1500px';
-    //printChart.canvas.parentNode.style.height = '900px';
-    //printChart.resize();
 
     printRSChart.destroy();
     document.getElementById("chart").height = "50px";
@@ -85,6 +86,161 @@ function GetInterval() {
     return diff_secs / numSamples;
 }
 
+function setChartConfiguration(){
+    var labels = [];
+    penData.recordset.forEach(record => {
+        var multiLineLbl = record.time.split(" ");
+        labels.push(multiLineLbl);
+    });
+    var datasets = [];
+    var yAxes = [];
+    var x = 0;
+    printTrend.pens.forEach(pen => {
+        if ((pen.name != "Default") && (pen.name != "")) {
+            console.log("getting data for '" + pen.name + "'");
+            var data = [];
+            penData.recordset.forEach(record => {
+                data.push(record[pen.name]);
+            });
+            var dataSet = {
+                label: pen.name,
+                data: data,
+                borderColor: pen.color,
+                borderWidth: ((pen.name == selectedPen) ? 3 : 1),
+                backgroundColor: pen.color,
+                fill: false,
+                yAxisID: pen.name,
+                pointRadius: 0,
+                steppedLine: true
+            };
+            datasets.push(dataSet);
+            var ticks = {};
+            var stepSize = (pen.max - pen.min ) /10;
+            if (pen.rangeAuto) {
+                ticks = {
+                    fontColor: "black"
+                    //stepSize: stepSize
+                }
+            } else {
+                ticks = {
+                    fontColor: "black",
+                    min: pen.min,
+                    max: pen.max
+                    //stepSize: stepSize
+                }
+            }
+            console.log("ticks=");
+            console.log(ticks);
+            var yAxis = {
+                id: pen.name,
+                //display: (pen.name == selectedPen),
+                //display: true,
+                display: multiYAxis ? true : (pen.name == selectedPen),
+                scaleLabel: {
+                    fontColor: "black",
+                    fontSize: 14,
+                    display: true,
+                    labelString: pen.description
+                },
+                gridLines: {
+                    color: "#999999",
+                    display: (pen.name == selectedPen)
+                },
+                ticks: ticks,
+                afterDataLimits: (axis) => {
+                    var pen = printTrend.pens.find(x => x.name === axis.id);
+                    if (pen) {
+                        if (pen.rangeAuto) {
+                            pen.min = axis.min;
+                            pen.max = axis.max;
+                        }
+                    }
+                }
+            };
+            yAxes.push(yAxis);
+            x += 1;
+        }
+    });
+
+    printchartConfig = {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: datasets
+        },
+        responsive: false,
+        options: {
+            legend: {
+                display: true
+            },
+            animation: {
+                duration: 0
+            },
+            scales: {
+                xAxes: [{
+                    gridLines: {
+                        color: "#aaaaaa",
+                        display: true
+                    },
+                    ticks: {
+                        fontColor: "black",
+                        maxTicksLimit: 7.1,
+                        maxRotation: 0
+                    }
+                }],
+                yAxes: yAxes
+            },
+            tooltips: {
+                mode: "index",
+                intersect: false
+            },
+            hover: {
+                mode: "index",
+                intersect: true
+            }
+        }
+    };
+
+    printRSchartConfig = {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: datasets
+        },
+        responsive: true,
+        options: {
+            legend: {
+                display: true
+            },
+            animation: {
+                duration: 0
+            },
+            scales: {
+                xAxes: [{
+                    gridLines: {
+                        color: "#aaaaaa",
+                        display: true
+                    },
+                    ticks: {
+                        fontColor: "black",
+                        maxTicksLimit: 7.1,
+                        maxRotation: 0
+                    }
+                }],
+                yAxes: yAxes
+            },
+            tooltips: {
+                mode: "index",
+                intersect: false
+            },
+            hover: {
+                mode: "index",
+                intersect: true
+            }
+        }
+    };
+}
+
 function UpdateChart(callback) {
     console.log("Calling get data");
     var penArray = GetPenArray();
@@ -94,161 +250,8 @@ function UpdateChart(callback) {
                 ShowWarningMessageBox("Failed to get data.");
                 return;
             }
-            console.log(result);
-            console.log(result.recordset[0]);
-            var labels = [];
-            result.recordset.forEach(record => {
-                var multiLineLbl = record.time.split(" ");
-                labels.push(multiLineLbl);
-            });
-            console.log(labels);
-            var datasets = [];
-            var yAxes = [];
-            var x = 0;
-            printTrend.pens.forEach(pen => {
-                if ((pen.name != "Default") && (pen.name != "")) {
-                    console.log("getting data for '" + pen.name + "'");
-                    var data = [];
-                    result.recordset.forEach(record => {
-                        data.push(record[pen.name]);
-                    });
-                    var dataSet = {
-                        label: pen.name,
-                        data: data,
-                        borderColor: pen.color,
-                        borderWidth: ((pen.name == selectedPen) ? 3 : 1),
-                        backgroundColor: pen.color,
-                        fill: false,
-                        yAxisID: pen.name,
-                        pointRadius: 0,
-                        steppedLine: true
-                    };
-                    datasets.push(dataSet);
-                    var ticks = {};
-                    var stepSize = (pen.max - pen.min ) /10;
-                    if (pen.rangeAuto) {
-                        ticks = {
-                            fontColor: "black"
-                            //stepSize: stepSize
-                        }
-                    } else {
-                        ticks = {
-                            fontColor: "black",
-                            min: pen.min,
-                            max: pen.max
-                            //stepSize: stepSize
-                        }
-                    }
-                    console.log("ticks=");
-                    console.log(ticks);
-                    var yAxis = {
-                        id: pen.name,
-                        //display: (pen.name == selectedPen),
-                        display: true,
-                        scaleLabel: {
-                            fontColor: "black",
-                            fontSize: 14,
-                            display: true,
-                            labelString: pen.description
-                        },
-                        gridLines: {
-                            color: "#999999",
-                            display: (pen.name == selectedPen)
-                        },
-                        ticks: ticks,
-                        afterDataLimits: (axis) => {
-                            var pen = printTrend.pens.find(x => x.name === axis.id);
-                            if (pen) {
-                                if (pen.rangeAuto) {
-                                    pen.min = axis.min;
-                                    pen.max = axis.max;
-                                }
-                            }
-                        }
-                    };
-                    yAxes.push(yAxis);
-                    x += 1;
-                }
-            });
-
-            printchartConfig = {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: datasets
-                },
-                responsive: false,
-                options: {
-                    legend: {
-                        display: true
-                    },
-                    animation: {
-                        duration: 0
-                    },
-                    scales: {
-                        xAxes: [{
-                            gridLines: {
-                                color: "#aaaaaa",
-                                display: true
-                            },
-                            ticks: {
-                                fontColor: "black",
-                                maxTicksLimit: 7.1,
-                                maxRotation: 0
-                            }
-                        }],
-                        yAxes: yAxes
-                    },
-                    tooltips: {
-                        mode: "index",
-                        intersect: false
-                    },
-                    hover: {
-                        mode: "index",
-                        intersect: true
-                    }
-                }
-            };
-
-            printRSchartConfig = {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: datasets
-                },
-                responsive: true,
-                options: {
-                    legend: {
-                        display: true
-                    },
-                    animation: {
-                        duration: 0
-                    },
-                    scales: {
-                        xAxes: [{
-                            gridLines: {
-                                color: "#aaaaaa",
-                                display: true
-                            },
-                            ticks: {
-                                fontColor: "black",
-                                maxTicksLimit: 7.1,
-                                maxRotation: 0
-                            }
-                        }],
-                        yAxes: yAxes
-                    },
-                    tooltips: {
-                        mode: "index",
-                        intersect: false
-                    },
-                    hover: {
-                        mode: "index",
-                        intersect: true
-                    }
-                }
-            };
-
+            penData = result;
+            setChartConfiguration();
             ChartResize(() => {
                 if (callback) {
                     console.log("Executing UpdateChart callback.");
@@ -258,10 +261,6 @@ function UpdateChart(callback) {
             
         });
 
-    } else {
-        console.log("No pens... Hiding chart.");
-        document.getElementById("msgAddaPen").classList.remove("hide");
-        document.getElementById("chart").classList.add("hide");
     }
 
 };
@@ -302,16 +301,10 @@ document.getElementById("btnPrint").addEventListener("click", ()=>{
     printCharttoPDF();
 });
 
-document.getElementById("btnFullscreen").addEventListener("click", ()=>{
-    var window = remote.getCurrentWindow();
-    window.maximize();
-    window.setFullScreen(true);
-    console.log(window);
-});
-
-document.getElementById("btnCancel").addEventListener("click", ()=>{
-    var window = remote.getCurrentWindow();
-    window.close();
+document.getElementById("btnYAxis").addEventListener("click", ()=>{
+    multiYAxis = !multiYAxis;
+    setChartConfiguration();
+    ChartResize();
 });
 
 //#endregion EVENT HANDLERS
