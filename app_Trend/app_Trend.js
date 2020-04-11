@@ -675,7 +675,7 @@ function ShowPrintChartWindow() {
     // Get the current window size and position.
     const pos = remote.getCurrentWindow().getPosition();
     const size = remote.getCurrentWindow().getSize();
-    var xPos = pos[0] + (size[0] / 2) - 400;
+    var xPos = pos[0] + (size[0] / 2) - 500;
     var yPos = pos[1] + (size[1] / 2) - 300;
 
     let win = new remote.BrowserWindow({
@@ -683,7 +683,7 @@ function ShowPrintChartWindow() {
         ////frame: false,
         //modal: true,
         resizable: true,
-        width: 800,
+        width: 1000,
         height: 600,
         x: xPos,
         y: yPos,

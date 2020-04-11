@@ -1,10 +1,17 @@
 //#region GLOBAL VARIABLES
 var printTrend = {};
+
 var printchartConfig = {};
 var printCanvas = document.querySelector('#chart');
-
 var printchartDoc = printCanvas.getContext("2d");
 var printChart;
+
+var printRSchartConfig = {};
+var printRSCanvas = document.querySelector('#chartRS');
+var printRSchartDoc = printRSCanvas.getContext("2d");
+var printRSChart = new Chart(printRSchartDoc, printRSchartConfig);
+
+
 const numSamples = 2000;
 var selectedPen;
 
@@ -19,18 +26,14 @@ var config = {
 
 //#region PRINT FUNCTIONS
 function printCharttoPDF(){
-    //UpdatePrintChart(()=>{
-        //printCanvas.height = 600;
-        //printCanvas.width = 1200;
-        //printChart.resize();
-        //create image from dummy canvas
+    
         var printCanvasImg = printCanvas.toDataURL("image/jpeg", 1.0);
       
           //creates PDF from img
         var doc = new jsPDF('landscape');
-        doc.setFontSize(20);
-        doc.text(15, 15, printTrend.name);
-        doc.addImage(printCanvasImg, 'JPEG', 10, 10, 280, 150 );
+        doc.setFontSize(10);
+        doc.text(15, 8, printTrend.name);
+        doc.addImage(printCanvasImg, 'JPEG', 10, 20, 280, 200 );
         doc.save(printTrend.name.split(".")[0] + ".pdf");
     //});    
 }
@@ -39,14 +42,27 @@ function printCharttoPDF(){
 //#region CHART DISPLAY FUNCTIONS
 function ChartResize(callback) {
     console.log("Resizing chart.")
-    //document.getElementById("chart").style.display = "none";
-    //printChart.destroy();
-    //document.getElementById("chart").height = "50px";
-    
+       
+    if (printChart) {
+        printChart.destroy();
+    }
+    printCanvas.parentNode.style.width="0";
+    printCanvas.parentNode.style.height="0";
+    printCanvas.width="1600";
+    printCanvas.height="1000";
+
+    printchartDoc = printCanvas.getContext("2d");
+
     printChart = new Chart(printchartDoc, printchartConfig);
-    
     printChart.canvas.parentNode.style.width = '1500px';
+    //printChart.canvas.parentNode.style.height = '900px';
     //printChart.resize();
+
+    printRSChart.destroy();
+    document.getElementById("chart").height = "50px";
+    printRSChart = new Chart(printRSchartDoc, printRSchartConfig);
+    printRSChart.resize();
+
     if (callback) {
         callback();
     }
@@ -194,6 +210,45 @@ function UpdateChart(callback) {
                 }
             };
 
+            printRSchartConfig = {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                responsive: true,
+                options: {
+                    legend: {
+                        display: true
+                    },
+                    animation: {
+                        duration: 0
+                    },
+                    scales: {
+                        xAxes: [{
+                            gridLines: {
+                                color: "#aaaaaa",
+                                display: true
+                            },
+                            ticks: {
+                                fontColor: "black",
+                                maxTicksLimit: 7.1,
+                                maxRotation: 0
+                            }
+                        }],
+                        yAxes: yAxes
+                    },
+                    tooltips: {
+                        mode: "index",
+                        intersect: false
+                    },
+                    hover: {
+                        mode: "index",
+                        intersect: true
+                    }
+                }
+            };
+
             ChartResize(() => {
                 if (callback) {
                     console.log("Executing UpdateChart callback.");
@@ -240,7 +295,7 @@ electron.ipcRenderer.on('printTrend', (event, message) => {
 });
 
 window.addEventListener("resize", () => {
-    //ChartResize();
+    ChartResize();
 });
 
 document.getElementById("btnPrint").addEventListener("click", ()=>{

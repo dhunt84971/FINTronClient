@@ -8,19 +8,26 @@
 </head>
   
   <body>
+    
+    <div style="height:0; width:0; overflow:hidden;">
+      <canvas id="chart" width="1600" height="1000"></canvas>
+    </div>
+  
     <div class="vboxFill appWindow noMargin noPadding" >
       <div class="hbox">
         <div class="btn" id="btnPrint">Print to PDF</div>  
         <!--<div class="btn" id="btnFullscreen">Fullscreen</div>-->
         <!--<div class="btn" id="btnCancel">Close</div>-->
       </div>
+      <div class="vboxFill"></div>
         <div class="hboxFill">
-            <div class="hboxFill"></div>
-            <div>
-                <canvas id="chart" width="1600" height="1000"></canvas>
+            
+            <div class="center_left_top">
+              <canvas id="chartRS" ></canvas>
             </div>
-            <div class="hboxFill"></div>
+            
         </div>
+        <div class="vboxFill"></div>
     </div>
     
     <script src="../scripts/thirdParty/Chart.js"></script>
