@@ -366,7 +366,8 @@ function UpdateChart(callback) {
                     },
                     tooltips: {
                         mode: "index",
-                        intersect: false
+                        intersect: false,
+                        position: "nearest"
                     },
                     hover: {
                         mode: "index",

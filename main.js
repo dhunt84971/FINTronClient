@@ -24,7 +24,7 @@ function createWindow() {
   //win.removeMenu();
   
   // Open the DevTools.
-  //win.webContents.openDevTools();
+  win.webContents.openDevTools();
 
   win.once('ready-to-show', () => {
     win.show();
