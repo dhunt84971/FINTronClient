@@ -195,12 +195,14 @@ html, body {
     border-top-right-radius:0px !important;
     border-bottom-right-radius:0px !important;
     border-right: 0px !important;
+    overflow: hidden;
 }
 
 .btnComboRight {
     border-top-left-radius:0px !important;
     border-bottom-left-radius:0px !important;
     border-left: 0px !important;
+    overflow: hidden;
 }
 
 .btnNav_selected {
@@ -244,9 +246,15 @@ html, body {
 }
 
 .btnPenColor{
-    height: 3px;
+    min-height: 3px;
     margin-top: 2px;
     width: 110px;
+}
+
+.btnPenValue {
+    margin-top: 2px;
+    color: white;
+    font: 10px "Helvetica Neue", Helvetica, Arial, san-serif;
 }
 
 #btnAddPen {

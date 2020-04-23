@@ -12,7 +12,8 @@ var pen =
         min: 0,
         max: 100,
         rangeAuto: true,
-        location: "Default"
+        location: "Default",
+        lastValue: 0
     }];
 */
 const numSamples = 2000;
@@ -382,6 +383,8 @@ function UpdateChart(callback) {
                     callback();
                 }
             });
+
+            UpdateLastValue(datasets);
             
         });
 
@@ -449,6 +452,23 @@ function HidePen(PenName) {
 
 function SetPenRange(PenName, Min, Max, RangeAuto) {
 
+};
+
+function AutoFormat(value, maxFigures){
+    if (isNaN(value) || value == null){
+        return "---";
+    }
+    else{
+        return value.toPrecision(maxFigures);
+    }
+}
+
+function UpdateLastValue(datasets){
+    datasets.forEach(dset => {
+        var pen = trend.pens.find(x => x.name === dset.label);
+        pen.lastValue = AutoFormat(dset.data[dset.data.length-1], 5);
+        document.getElementById(pen.name + "_value").innerHTML = pen.lastValue;
+    });
 };
 
 function SelectPen(PenName, callback) {
@@ -734,7 +754,8 @@ function AddPenDiv(Pen) {
     divBtn += "title='" + Pen.description + "' ";
     //divBtn += "style='border-color:" + Pen.color + "' ";
     divBtn += "onclick='btnPen_onclick(event)'>" + Pen.name;
-    divBtn += "<div class='btnPenColor' style='background-color:" + Pen.color + "'></div></div>";
+    divBtn += "<div class='btnPenColor' style='background-color:" + Pen.color + "'></div>";
+    divBtn += "<div class='btnPenValue' id='" + Pen.name + "_value'>" + Pen.lastValue + "</div></div>";
     divBtn += "<div class='btn btnProps btnComboRight' id='" + Pen.name + "_props' "
     //divBtn += "style='border-color:" + Pen.color + "' ";
     divBtn += "data-pen='" + Pen.name + "' "; // This attribute will be used to get the pen name.
