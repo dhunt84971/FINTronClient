@@ -1,7 +1,7 @@
 {
   "name": "FINTronClient",
   "productname": "FIN Client Electron App",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "FIN Client Electron App.",
   "main": "main.js",
   "author": {
