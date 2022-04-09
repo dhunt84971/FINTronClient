@@ -18,7 +18,7 @@
     "js-datepicker": "^4.6.6",
     "js-treeview": "^1.1.5",
     "jspdf": "^1.5.3",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "mssql": "6.0.1",
     "timepicker": "^1.13.4"
   },
