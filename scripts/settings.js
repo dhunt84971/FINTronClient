@@ -1,4 +1,3 @@
-const settingsFile = ".settings";
 var settings = {};
 
 /// Save settings to the .settings file.
@@ -39,7 +38,8 @@ function loadDBConfig(callback){
             config.user = settings.user;
             config.password = settings.password;
             config.fin = settings.fin;
-    
+            db = new appDatabase(config);
+            db.connect().catch((err)=>{console.log(err);});  // Preload the connection to speed it up.
         } else {
             console.log("Error reading settings file.");
         }

@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>FIN Electron Client</title>
+    <link rel="stylesheet" href="layout_style.css">
     <link rel="stylesheet" href="style.css">
+    
 </head>
   
   <body>
@@ -24,61 +26,66 @@
       
       <!--#region TREND DIV -->
       <div class="appWindow" id="winTrend">
-      <div class="top">
-        <div class="btn btnBar" id="trend_btnNew">New</div>
-        <div class="btn btnBar" id="trend_btnOpen">Open</div>
-        <div class="btn btnBar" id="trend_btnSave">Save</div>
-        <div class="btn btnBar" id="trend_btnSaveAs">SaveAs</div>
-        <div class="btn btnBar" id="trend_btnExport">Export</div>
-        <div class="btn btnBar" id="trend_btnTimes">Times</div>
-        <div class="btn btnBar" id="trend_btnPrint">Print</div>
-        <div class="hboxFill" id="titleTrend"></div>
-      </div>
-      <div class="center">
-        <div class="center_left">
-          <div class="center_left_top">
-            <canvas class="hide" id="chart"></canvas>
-            <div class="vboxFill" id="msgAddaPen">Add a pen</div>
+        <div class="trend_top">
+          <div class="trend_btn trend_btnBar" id="trend_btnNew">New</div>
+          <div class="trend_btn trend_btnBar" id="trend_btnOpen">Open</div>
+          <div class="trend_btn trend_btnBar" id="trend_btnSave">Save</div>
+          <div class="trend_btn trend_btnBar" id="trend_btnSaveAs">SaveAs</div>
+          <div class="trend_btn trend_btnBar" id="trend_btnExport">Export</div>
+          <div class="trend_btn trend_btnBar" id="trend_btnPrint">Print</div>
+          <div class="trend_btn trend_btnBar" id="trend_btnTimes">Times</div>
+          <div class="hboxFill toolbar_filename" id="trend_titleTrend"></div>
+        </div>
+        <div class="trend_center">
+          <div class="trend_center_left">
+            <div class="trend_center_left_top">
+              <canvas class="hide" id="trend_chart"></canvas>
+              <div class="vboxFill" id="trend_msgAddaPen">Add a pen</div>
+            </div>
+            <div class="trend_bottom_filler"></div>
+            <div class="trend_bottom">
+              <div class="trend_bottom_nav">
+                <div class="horizSpacer"></div>
+                <div class="trend_btn trend_btnNav" id="btn7d">7 days</div>
+                <div class="trend_btn trend_btnNav" id="btn1d">1 day</div>
+                <div class="trend_btn trend_btnNav" id="btn12h">12 hours</div>
+                <div class="trend_btn trend_btnNav" id="btn8h">8 hours</div>
+                <div class="trend_btn trend_btnNav" id="btn4h">4 hours</div>
+                <div class="trend_btn trend_btnNav" id="btn1h">1 hour</div>
+                <div class="trend_btn trend_btnNav" id="btn10m">10 min</div>
+                <div class="trend_btn trend_btnNav" id="btn1m">1 min</div>
+                <div class="trend_btn trend_btnNav" id="btn10s">10 sec</div>
+                <div class="horizSpacer"></div>
+              </div>
+              <div class="trend_bottom_nav">
+                <div class="horizSpacer"></div>
+                <div class="trend_btn trend_btnNav" id="btnStartPast">&lt;&lt;</div>
+                <div class="trend_btn trend_btnNav" id="btnStartFuture">&gt;&gt;</div>
+                <div class="trend_btn trend_btnNav" id="btnPanPast">&lt;</div>
+                <div class="trend_bottom_lbl" id="lblChartRange"></div>
+                <div class="trend_btn trend_btnNav" id="btnPanFuture">&gt;</div>
+                <div class="trend_btn trend_btnNav" id="btnEndPast">&lt;&lt;</div>
+                <div class="trend_btn trend_btnNav" id="btnEndFuture">&gt;&gt;</div>
+                <div class="trend_btn trend_btnNav" id="btnNow">&gt;&gt;|</div>
+                <div class="horizSpacer"></div>
+              </div>
+            </div>
           </div>
-          <div class="bottom_filler"></div>
-          <div class="bottom">
-            <div class="bottom_nav">
-              <div class="horizSpacer"></div>
-              <div class="btn btnNav" id="btn7d">7 days</div>
-              <div class="btn btnNav" id="btn1d">1 day</div>
-              <div class="btn btnNav" id="btn12h">12 hours</div>
-              <div class="btn btnNav" id="btn8h">8 hours</div>
-              <div class="btn btnNav" id="btn4h">4 hours</div>
-              <div class="btn btnNav" id="btn1h">1 hour</div>  
-              <div class="btn btnNav" id="btn10m">10 min</div>  
-              <div class="btn btnNav" id="btn1m">1 min</div>
-              <div class="btn btnNav" id="btn10s">10 sec</div>                                
-              <div class="horizSpacer"></div>
+          <div class="trend_center_right" id="divPenButtons">
+            <div class="hbox trend_penButtons" id="divAddPen">
+              <div class="trend_btn" id="trend_btnAddPen">+ Add Pen</div>
+              <div class="horizDivider"></div>
+              <div class="trend_btn" id="trend_btnPenName" title="Display pen name or description.">
+                <img src='images/penTag2.png' width=25px />
+              </div>
             </div>
-            <div class="bottom_nav">
-              <div class="horizSpacer"></div>
-              <div class="btn btnNav" id="btnStartPast">&lt;&lt;</div>
-              <div class="btn btnNav" id="btnStartFuture">&gt;&gt;</div>
-              <div class="btn btnNav" id="btnPanPast">&lt;</div>
-              <div class="bottom_lbl" id="lblChartRange"></div>
-              <div class="btn btnNav" id="btnPanFuture">&gt;</div>
-              <div class="btn btnNav" id="btnEndPast">&lt;&lt;</div>
-              <div class="btn btnNav" id="btnEndFuture">&gt;&gt;</div>
-              <div class="btn btnNav" id="btnNow">&gt;&gt;|</div>
-              <div class="horizSpacer"></div>
-            </div>
+            <div class="trend_pen_spacer" id="divPenDropTop" data-pen="__MOVETOP"></div>
           </div>
         </div>
-        <div class="center_right" id="divPenButtons">
-          <div class="hbox penButtons" id="divAddPen">
-            <div class="btn btnPen" id="btnAddPen">Add Pen</div>
-          </div>
-        </div>
-      </div>
       </div>
       <!--#endregion TREND DIV -->
       <div class="appWindow" id="winExport"></div>
-      
+    
       <!--#region REPORTS DIV-->
       <div class="appWindow" id="winReports"></div>
       <!--#endregion REPORTS DIV-->
@@ -134,6 +141,12 @@
     <div style="height:0; width:0; overflow:hidden;">
       <canvas id="print-chart" width="1200" height="600"></canvas>
     </div>
+
+    <!--#region TREND CONTEXT MENU-->
+    <div class="contextMenu hide" id="chartContextMenu">
+      <div class="btnMenu" id="btnZoomPrev">ZOOM PREV</div>
+    </div>
+    <!--#endregion TREND CONTEXT MENU-->
     
     <!-- Third Party Dependencies -->
     <script src="scripts/thirdParty/Chart.js"></script>
@@ -147,10 +160,11 @@
     
     <!-- Global Function Specific Scripts -->
     <script src="getChartData.js"></script>
+    <script src="app_Trend/app_Trend.js"></script>
     <script src="script.js"></script>
     
     <!-- DIV Specific Scripts-->
-    <script src="app_Trend/app_Trend.js"></script>
+    
     <script src="app_Settings/app_Settings.js"></script>
   </body>
 </html>

@@ -13,17 +13,6 @@ function getSettingsfromDialog() {
     return settings;
 }
 
-function ShowWarningMessageBox(message){
-    const options = {
-        type: "warning",
-        title: "Warning",
-        buttons: ["OK"],
-        message: message,
-    };
-
-    dialog.showMessageBox(null, options);
-}
-
 //#endregion SETTINGS FUNCTIONS
 
 //#region EVENT HANDLERS
@@ -41,26 +30,26 @@ document.getElementById("btnSettingsApply").addEventListener("click", ()=>{
 
 // Test SQL connection using the settings entered.
 document.getElementById("btnTestSQLConnection").addEventListener("click", ()=>{
-    verifySQLConnection((result) =>{
+    db.verifySQLConnection((result) =>{
         if (result){
-            ShowOKMessageBox("Connection successful.");
+            globals.showOKMessageBox("Connection successful.");
         }
         else{
-            ShowWarningMessageBox("Connection failed.");
+            globals.showWarningMessageBox("Connection failed.");
         }
     })
 });
 
 document.getElementById("btnTestFINConnection").addEventListener("click", ()=>{
     // Use the GetLocations query to check the FIN connection.
-    GetTags((err, data) =>{
+    db.getTags((err, data) =>{
         if (err){
-            ShowWarningMessageBox("Connection to FIN failed.");
+            globals.showWarningMessageBox("Connection to FIN failed.");
             return;
         }
         else{
             var tagCount = data.recordset.length;
-            ShowOKMessageBox("Connection to FIN successful. \n" + tagCount + " datapoints available.");
+            globals.showOKMessageBox("Connection to FIN successful. \n" + tagCount + " datapoints available.");
         }
     });
 });
@@ -80,7 +69,7 @@ loadSettingsfromFile(settingsFile, function(err, settings) {
         console.log(settings);
     } else {
         ////alert("No settings found.  Configure your settings.");
-        ShowWarningMessageBox("No settings found.  Configure your settings.");
+        globals.showWarningMessageBox("No settings found.  Configure your settings.");
     }
 });
 //#endregion INITIALIZATION

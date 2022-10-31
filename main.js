@@ -7,7 +7,7 @@ let win;
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({ 
-    width: 900, height: 600, show:false, backgroundColor: "#fff",
+    width: 1000, height: 800, show:false, backgroundColor: "#fff",
     webPreferences: {
     nodeIntegration: true,
     webviewTag: true 
@@ -24,7 +24,7 @@ function createWindow() {
   //win.removeMenu();
   
   // Open the DevTools.
-  // win.webContents.openDevTools();
+  win.webContents.openDevTools();
 
   win.once('ready-to-show', () => {
     win.show();

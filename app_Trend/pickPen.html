@@ -8,39 +8,45 @@
     <link rel="stylesheet" href="pickPen.css">
 </head>
   
-  <body>
-    <div class="container">
-      <div class="top">
-        <div class="top_lbl">Selected Tag</div>
-        <div class="top_entry" id="txtTop_entry"></div>
+<body>
+  <div class="container">
+    <div class="top">
+      <div class="top_lbl">Selected Tag</div>
+      <div class="top_entry" id="txtTop_entry"></div>
+    </div>
+    <div class="top">
+      <div class="top_lbl">Description</div>
+      <div class="top_entry" id="txtTop_description"></div>
+    </div>
+    <div class="top">
+      <div class="top_lbl">Search</div>
+      <input class="inputEntry" id="txtSearch">
+      <div class="top_divide"></div>
+      <div class="btn" title="Close window." id="btnClearSearch">Clear</div>
+    </div>
+    
+    <div class="center">
+      <div class="center_location" id="leftSideLocations">
+        <div class="header_label">&nbsp;&nbsp;Locations</div>
+        <div id="lstLocations"></div>
       </div>
-      <div class="top">
-        <div class="top_lbl">Description</div>
-        <div class="top_entry" id="txtTop_description"></div>
-      </div>
-      <div class="center">
-        <div class="center_location">
-          <div class="header_label">&nbsp;&nbsp;Locations</div>
-          <div id="lstLocations"></div>
-        </div>
-        <div class="center_divide"></div>
-        <div class="center_tags">
-          <div class="header_label">&nbsp;&nbsp;Data Points</div>
-          <div id="lstTags"></div>
-        </div>
-      </div>
-      <div class="bottom">
-        <div class="btn" id="btnSelect">Select</div>
-        <div class="horizSpacer"></div>
-        <div class="btn" id="btnDone">Done</div>
+      <div class="vsplit" id="vSplitter"></div>
+      <div class="center_tags">
+        <div class="header_label">&nbsp;&nbsp;Data Points</div>
+        <div id="lstTags"></div>
       </div>
     </div>
-    <script src="div_treeview.js"></script>
-    <script src="../scripts/globals.js"></script> <!-- Required for access to dependencies. -->
-    <script src="../scripts/settings.js"></script> <!-- Required for access to settings. -->
-    <script src="../scripts/database.js"></script> <!-- Required for access to database functions. -->
-    <script src="../getChartData.js"></script>
-    <script src="pickPen.js"></script>
+    <div class="bottom">
+      <div class="btn" title="Close window." id="btnDone">Close</div>
+      <div class="horizSpacer"></div>
+      <div class="btn" title="Add selected tag to trend." id="btnSelect">Add</div>
+    </div>
+  </div>
+  <script src="div_treeview.js"></script>
+  <script src="../scripts/globals.js"></script> <!-- Required for access to dependencies. -->
+  <script src="../scripts/settings.js"></script> <!-- Required for access to settings. -->
+  <script src="../scripts/database.js"></script> <!-- Required for access to database functions. -->
+  <script src="pickPen.js"></script>
 </body>
 </html>
 
