@@ -11,31 +11,52 @@
     <div class="container">
       <div class="vboxFill">
         <div class="label" id="txtTitle"></div>
-        <hr/>
+        <hr></hr>
+        <div class="label" id="txtDescription"></div>
+        <hr class="highlighted"></hr>
         <div class="label">Pen Range -</div>
-        <div class="hbox">
-          <input type="radio" name="chkAutoManRange" id="optAuto">
-          <label for="optAuto" class="label leftMargin">Automatic</label>
+        <div class="vbox noPadding indent">
+          <div class="hbox">
+            <input type="radio" name="chkAutoManRange" id="optAuto">
+            <label for="optAuto" class="label leftMargin">Automatic</label>
+          </div>
+          <div class="hbox">
+            <input type="radio" name="chkAutoManRange" id="optManual">
+            <label for="optManual" class="label leftMargin">Manual</label>
+          </div>
+          <div class="hbox">
+            <div class="label indent" style="width:120px">Minimum Value:</div>
+            <input class="inputEntry leftMargin" id="txtMin">
+          </div>
+          <div class="hbox">
+            <div class="label indent" style="width:120px">Maximum Value:</div>
+            <input class="inputEntry leftMargin" id="txtMax">
+          </div>
+          <div class="hbox hide indent" id="boxApplyRangeToUnits">
+            <input type="checkbox" id="chkApplyRangeToUnits">
+            <label for="chkApplyRangeToUnits" class="label leftMargin" id="lblApplyRangeToUnits"></label>
+          </div>
+          <div class="hbox hide" id="boxLogarithmic">
+            <input type="checkbox" id="chkLogarithmic">
+            <label for="chkLogarithmic" class="label leftMargin">Logarithmic Scale</label>
+          </div>
         </div>
-        <div class="hbox">
-          <input type="radio" name="chkAutoManRange" id="optManual">
-          <label for="optManual" class="label leftMargin">Manual</label>
-        </div>
-        <div class="hbox">
-          <div class="label indent" style="width:120px">Minimum Value:</div>
-          <input class="inputEntry leftMargin" id="txtMin">
-        </div>
-        <div class="hbox">
-          <div class="label indent" style="width:120px">Maximum Value:</div>
-          <input class="inputEntry leftMargin" id="txtMax">
+        <hr class="highlighted"></hr>
+        <div class="hbox noMargin noPadding">
+          <div class="label">Pen Color:</div>
+          <input type="color" id="colorPen" value="#ff0000">
         </div>
         <div class="vboxFill"></div>
         <hr/>
         <div class="hbox">
           <div class="btn btnDialog" id="btnRemovePen">Remove Pen</div>
           <div class="hboxFill"></div>
-          <div class="btn btnDialog" id="btnCancel">Cancel</div>
-          <div class="btn btnDialog btnRight" id="btnDone">Done</div>
+        </div>
+        <hr/>
+        <div class="hbox">
+          <div class="btn btnDialog" id="btnCancel">Close</div>
+          <div class="hboxFill"></div>
+          <div class="btn btnDialog btnRight" id="btnDone">Apply</div>
         </div>
       </div>
     </div>

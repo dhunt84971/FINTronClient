@@ -1,7 +1,7 @@
 {
   "name": "FINTronClient",
   "productname": "FIN Client Electron App",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "FIN Client Electron App.",
   "main": "main.js",
   "author": {
@@ -18,6 +18,7 @@
     "js-datepicker": "^4.6.6",
     "js-treeview": "^1.1.5",
     "jspdf": "^1.5.3",
+    "lib-app-settings": "^1.1.1",
     "moment": "^2.24.0",
     "mssql": "6.0.1",
     "timepicker": "^1.13.4"
@@ -49,5 +50,4 @@
       "icon": "build/chart.ico"
     }
   }
-  
 }

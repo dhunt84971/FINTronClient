@@ -1,3 +1,5 @@
+const { globalShortcut } = require("electron");
+
 //#region GLOBAL VARIABLES
 var printTrend = {};
 
@@ -29,18 +31,44 @@ var multiYAxis = true;
 
 //#region PRINT FUNCTIONS
 function printCharttoPDF(){
+    var printCanvasImg = printCanvas.toDataURL("image/jpeg", 1.0);
     
-        var printCanvasImg = printCanvas.toDataURL("image/jpeg", 1.0);
-      
-          //creates PDF from img
-        var doc = new jsPDF('landscape');
-        doc.setFontSize(10);
-        doc.text(15, 8, printTrend.name);
-        doc.addImage(printCanvasImg, 'JPEG', 10, 20, 280, 190 );
-        doc.save(printTrend.name.split(".")[0] + ".pdf");
-    //});    
+        //creates PDF from img
+    var doc = new jsPDF('landscape');
+    doc.setFontSize(10);
+    doc.text(15, 8, printTrend.name);
+    doc.addImage(printCanvasImg, 'JPEG', 10, 20, 280, 190 );
+    let filename = printTrend.fileName.replace(".trd",".pdf");
+    if (!filename.includes(".pdf")){
+        filename += ".pdf";
+    }
+    console.log(filename);
+    doc.save(filename);
+    globals.showOKMessageBox("The PDF file was saved in the same folder as the trend file.");
 }
 //#endregion PRINT FUNCTIONS
+
+//#region PEN FUNCTIONS
+function AutoRangeDigitals () {
+    let pens = printTrend.pens.filter(x=>x.type == 1 && x.rangeAuto);
+    console.log({digitalPens: pens});
+    console.log(pens.length);
+    if (pens.length > 0){
+        let maxRange = (2 * pens.length) + 1;
+        if (maxRange < 7) maxRange = 7;
+        let i = 0;
+        for (let pen of pens){
+            pen.min = -1 - (2*i);
+            pen.max = pen.min + maxRange;
+            i += 1;
+            console.log(i);
+            console.log(pen.min);
+            console.log(pen.max);
+        }
+    }
+}
+
+//#endregion PEN FUNCTIONS
 
 //#region CHART DISPLAY FUNCTIONS
 function ChartResize(callback) {
@@ -115,8 +143,8 @@ function setChartConfiguration(){
             };
             datasets.push(dataSet);
             var ticks = {};
-            var stepSize = (pen.max - pen.min ) /10;
-            if (pen.rangeAuto) {
+            AutoRangeDigitals();
+            if (pen.rangeAuto && pen.type != 1) {
                 ticks = {
                     fontColor: "black"
                     //stepSize: stepSize
@@ -129,10 +157,10 @@ function setChartConfiguration(){
                     //stepSize: stepSize
                 }
             }
-            console.log("ticks=");
-            console.log(ticks);
             var yAxis = {
                 id: pen.name,
+                type: (pen.yAxisType)? pen.yAxisType : "linear",
+                weight: (pen.name == selectedPen)? 0 : 1,
                 //display: (pen.name == selectedPen),
                 //display: true,
                 display: multiYAxis ? true : (pen.name == selectedPen),
@@ -144,7 +172,9 @@ function setChartConfiguration(){
                 },
                 gridLines: {
                     color: "#999999",
-                    display: (pen.name == selectedPen)
+                    //display: (pen.name == selectedPen),
+                    drawOnChartArea: (pen.name == selectedPen),
+                    drawTicks: multiYAxis ? true : (pen.name == selectedPen)
                 },
                 ticks: ticks,
                 afterDataLimits: (axis) => {
@@ -192,7 +222,8 @@ function setChartConfiguration(){
             },
             tooltips: {
                 mode: "index",
-                intersect: false
+                intersect: false,
+                position: "nearest"
             },
             hover: {
                 mode: "index",
@@ -231,7 +262,8 @@ function setChartConfiguration(){
             },
             tooltips: {
                 mode: "index",
-                intersect: false
+                intersect: false,
+                position: "nearest"
             },
             hover: {
                 mode: "index",
@@ -241,28 +273,29 @@ function setChartConfiguration(){
     };
 }
 
-function UpdateChart(callback) {
+async function UpdateChart(callback) {
     console.log("Calling get data");
     var penArray = GetPenArray();
     if (penArray.length > 0) {
-        GetPenData(penArray, printTrend.startTime, printTrend.endTime, GetInterval(), (err, result) => {
-            if (err) {
-                ShowWarningMessageBox("Failed to get data.");
-                return;
-            }
-            penData = result;
-            setChartConfiguration();
-            ChartResize(() => {
-                if (callback) {
-                    console.log("Executing UpdateChart callback.");
-                    callback();
+        loadDBConfig((err, config)=>{
+            db = new appDatabase(config);
+            db.connect().catch((err)=>{console.log(err);});  // Preload the connection to speed it up.
+            db.getHistory(penArray, printTrend.startTime, printTrend.endTime, GetInterval(), (err, result) => {
+                if (err) {
+                    ShowWarningMessageBox("Failed to get data.");
+                    return;
                 }
+                penData = result;
+                setChartConfiguration();
+                ChartResize(() => {
+                    if (callback) {
+                        console.log("Executing UpdateChart callback.");
+                        callback();
+                    }
+                });
             });
-            
         });
-
     }
-
 };
 //#endregion CHART DISPLAY FUNCTIONS
 
@@ -277,19 +310,14 @@ electron.ipcRenderer.on('printTrend', (event, message) => {
         selectedPen = message.selectedPen;
         console.log(selectedPen);
 
-        loadDBConfig(()=>{
-
-            Chart.plugins.register({
-                beforeDraw: function(chartInstance) {
-                  var ctx = chartInstance.chart.ctx;
-                  ctx.fillStyle = "white";
-                  ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
-                }
-              });
-
-            UpdateChart();
-        });
-        
+        Chart.plugins.register({
+            beforeDraw: function(chartInstance) {
+                var ctx = chartInstance.chart.ctx;
+                ctx.fillStyle = "white";
+                ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
+            }
+            });
+        UpdateChart();   
     }
 });
 
