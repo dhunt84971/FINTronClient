@@ -777,4 +777,10 @@ canvas {
 
 /* #endregion CHART */
 
+/* #region SETTINGS */
+.version {
+  color: white;
+  font: 12px "Roboto", Helvetica, Arial, san-serif;
+}
 
+/* #endregion SETTINGS */

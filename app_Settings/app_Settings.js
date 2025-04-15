@@ -13,6 +13,15 @@ function getSettingsfromDialog() {
     return settings;
 }
 
+function updateSettings(settings){
+    saveSettingstoFile(settings);
+    config.server = settings.host;
+    config.database = settings.database;
+    config.user = settings.user;
+    config.password = settings.password;
+    config.fin = settings.fin;
+}
+
 //#endregion SETTINGS FUNCTIONS
 
 //#region EVENT HANDLERS
@@ -20,17 +29,16 @@ function getSettingsfromDialog() {
 document.getElementById("btnSettingsApply").addEventListener("click", ()=>{
     settings = getSettingsfromDialog();
     console.log(settings);
-    saveSettingstoFile(settings);
-    config.server = settings.host;
-    config.database = settings.database;
-    config.user = settings.user;
-    config.password = settings.password;
-    config.fin = settings.fin;
+    updateSettings(settings);
 });
 
 // Test SQL connection using the settings entered.
 document.getElementById("btnTestSQLConnection").addEventListener("click", ()=>{
+    settings = getSettingsfromDialog();
+    updateSettings(settings);
+    globals.showWaitImage();
     db.verifySQLConnection((result) =>{
+        globals.hideWaitImage();
         if (result){
             globals.showOKMessageBox("Connection successful.");
         }
@@ -41,8 +49,12 @@ document.getElementById("btnTestSQLConnection").addEventListener("click", ()=>{
 });
 
 document.getElementById("btnTestFINConnection").addEventListener("click", ()=>{
+    settings = getSettingsfromDialog();
+    updateSettings(settings);
+    globals.showWaitImage();
     // Use the GetLocations query to check the FIN connection.
     db.getTags((err, data) =>{
+        globals.hideWaitImage();
         if (err){
             globals.showWarningMessageBox("Connection to FIN failed.");
             return;
