@@ -23,4 +23,34 @@ Application -
 
 <img src="./screenshots/ss06.png">
 
+## Building Install Packages
 
+### Prerequisites
+
+- Node.js (v18 or later)
+- Run `npm install` from the project root to install all dependencies
+
+### Linux (AppImage and .deb)
+
+Build from a Linux machine:
+
+```bash
+npx electron-builder --linux
+```
+
+Output files will be in the `dist/` folder:
+- `FINTronClient-<version>.AppImage` — portable, runs on any Linux distro
+- `FINTronClient_<version>_amd64.deb` — installable via `sudo dpkg -i` on Ubuntu/Debian
+
+### Windows (NSIS installer)
+
+Build from a Windows machine:
+
+```bash
+npx electron-builder --win
+```
+
+Output file will be in the `dist/` folder:
+- `FINTronClient Setup <version>.exe` — NSIS installer for Windows
+
+**Note:** Windows installers should be built on a Windows machine. Cross-compiling from Linux is not reliably supported.

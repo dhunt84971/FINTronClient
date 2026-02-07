@@ -21,6 +21,8 @@ function updateSettings(settings){
     config.user = settings.user;
     config.password = settings.password;
     config.fin = settings.fin;
+    db = new appDatabase(config);
+    db.connect().catch((err)=>{console.log(err);});
 }
 
 //#endregion SETTINGS FUNCTIONS
