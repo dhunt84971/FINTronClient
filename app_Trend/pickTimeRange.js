@@ -1,7 +1,7 @@
 const electron = require("electron");
-const remote = require('electron').remote;
+const remote = require("@electron/remote");
 const moment = require('moment');
-const jQuery = require('jquery');
+const datepicker = require('js-datepicker');
 
 
 const dateTimeFormat = "MM/DD/YYYY HH:mm:ss";
@@ -51,8 +51,8 @@ electron.ipcRenderer.on('timeData', (event, trendData) => {
     if (trendData){
         trend = trendData;
         console.log(trend);
-        dpStartDate.setDate(moment(trend.startTime, dateTimeFormat).startOf("day"), true);
-        dpEndDate.setDate(moment(trend.endTime, dateTimeFormat).startOf("day"), true);
+        dpStartDate.setDate(moment(trend.startTime, dateTimeFormat).startOf("day").toDate(), true);
+        dpEndDate.setDate(moment(trend.endTime, dateTimeFormat).startOf("day").toDate(), true);
         dpStartTime.value = moment(trend.startTime, dateTimeFormat).format(timeFormat);
         dpEndTime.value = moment(trend.endTime, dateTimeFormat).format(timeFormat);
         UpdateDuration();

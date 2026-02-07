@@ -16,6 +16,7 @@ function getSettingsfromDialog() {
 function updateSettings(settings){
     saveSettingstoFile(settings);
     config.server = settings.host;
+    config.port = parseInt(settings.port) || 1433;
     config.database = settings.database;
     config.user = settings.user;
     config.password = settings.password;
@@ -69,13 +70,16 @@ document.getElementById("btnTestFINConnection").addEventListener("click", ()=>{
 //#endregion EVENT HANDLERS
 
 //#region INITIALIZATION
+var appVersion = require(APPDIR + "/package.json").version;
+document.getElementById("lblVersion").innerText = "v" + appVersion;
+
 loadSettingsfromFile(settingsFile, function(err, settings) {
     if (!err) {
         // Load the settings entry fields.
         document.getElementById("txtHost").value = settings.host;
-        document.getElementById("txtPort").value = settings.port;
+        document.getElementById("txtPort").value = settings.port || 1433;
         document.getElementById("txtDatabase").value = settings.database;
-        document.getElementById("txtFinLinkedServer").value = settings.fin;
+        document.getElementById("txtFinLinkedServer").value = settings.fin || "";
         document.getElementById("txtUsername").value = settings.user;
         document.getElementById("txtPassword").value = settings.password;
         console.log(settings);

@@ -1,5 +1,5 @@
 const electron = require("electron");
-const remote = require('electron').remote;
+const remote = require("@electron/remote");
 
 var pickedPen;
 var optAuto = document.getElementById("optAuto");

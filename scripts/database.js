@@ -18,7 +18,7 @@ function appDatabase(config) {
         return new Promise((resolve, reject) => {
             let locConfig = config;
             locConfig.connectionTimeout = 100;
-            let options = {encrypt: false, useUTC: false};
+            let options = {encrypt: false, useUTC: false, trustServerCertificate: true};
             locConfig.options = options;
             console.log(locConfig);
             const pool = new mssql.ConnectionPool(locConfig);
@@ -39,7 +39,7 @@ function appDatabase(config) {
         return new Promise(async (resolve, reject) => {
             let locConfig = config;
             locConfig.connectionTimeout = connTimeout; // Override default 15 second timeout.
-            let options = {encrypt: false, useUTC: false};
+            let options = {encrypt: false, useUTC: false, trustServerCertificate: true};
             locConfig.options = options;
             const conn = new mssql.ConnectionPool(locConfig);
             console.log(locConfig);
