@@ -1,12 +1,12 @@
 //#region GLOBAL DECLARATIONS
 "use strict";
 const electron = require("electron");
-const { remote } = require("electron");
-const { dialog } = require("electron").remote;
+const remote = require("@electron/remote");
+const { dialog } = require("@electron/remote");
 const moment = require("moment");
 const ipc = require("electron").ipcRenderer;
 const fs = require("fs");
-const jsPDF = require("jspdf");
+const { jsPDF } = require("jspdf");
 
 const settingsFile = ".settings";
 const libAppSettings = require("lib-app-settings");
@@ -14,8 +14,8 @@ const appSettings = new libAppSettings(settingsFile);
 
 const DEBUG_MODE = false; // Set to true to open all devtools.
 const dateTimeFormat = "MM/DD/YYYY HH:mm:ss";
-const APPDIR = electron.remote.app.getAppPath();
-const DOCSDIR = electron.remote.app.getPath("documents");
+const APPDIR = remote.app.getAppPath();
+const DOCSDIR = remote.app.getPath("documents");
 var db;
 
 var config = {};

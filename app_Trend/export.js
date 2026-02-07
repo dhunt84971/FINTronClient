@@ -1,7 +1,7 @@
 const electron = require("electron");
-const remote = require('electron').remote;
+const remote = require("@electron/remote");
 const moment = require('moment');
-const { dialog } = require("electron").remote;
+const { dialog } = require("@electron/remote");
 
 const dateTimeFormat = "MM/DD/YYYY HH:mm:ss";
 const numDisplaySamples = 1000;

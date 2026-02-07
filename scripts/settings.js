@@ -34,6 +34,7 @@ function loadDBConfig(callback){
             console.log(settings);
             // loadup the config object for the application.
             config.server = settings.host;
+            config.port = parseInt(settings.port) || 1433;
             config.database = settings.database;
             config.user = settings.user;
             config.password = settings.password;

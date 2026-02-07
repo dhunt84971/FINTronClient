@@ -1,5 +1,3 @@
-const { globalShortcut } = require("electron");
-
 //#region GLOBAL VARIABLES
 var printTrend = {};
 

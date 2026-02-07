@@ -1,4 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
+app.commandLine.appendSwitch("no-sandbox");
+const remoteMain = require("@electron/remote/main");
+remoteMain.initialize();
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -6,13 +9,16 @@ let win;
 
 function createWindow() {
   // Create the browser window.
-  win = new BrowserWindow({ 
+  win = new BrowserWindow({
     width: 1000, height: 800, show:false, backgroundColor: "#fff",
     webPreferences: {
     nodeIntegration: true,
-    webviewTag: true 
-    }    
+    contextIsolation: false,
+    webviewTag: true
+    }
   });
+
+  remoteMain.enable(win.webContents);
 
   // and load the index.html of the app.
   win.loadFile("index.html");
@@ -22,7 +28,7 @@ function createWindow() {
   //win.autoHideMenuBar = true;
   win.setMenuBarVisibility(false);
   //win.removeMenu();
-  
+
   // Open the DevTools.
   //win.webContents.openDevTools();
 
@@ -63,6 +69,11 @@ ipcMain.on("printTrend", (event, message) => {
   win.webContents.send("printTrend", message);
 });
 //#endregion IPC EVENTS
+
+// Enable @electron/remote for all child windows (modals, popups).
+app.on("browser-window-created", (event, win) => {
+  remoteMain.enable(win.webContents);
+});
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

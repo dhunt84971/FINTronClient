@@ -1,7 +1,5 @@
 "use strict";
 
-const { app } = require("electron");
-
 // Wrap the entire routine in an object that will be used as the name space for this script file.
 // External references will be made using 'app_Trend.' and internal references will need to use 'this.'
 
@@ -289,7 +287,7 @@ let app_Trend = {
             backgroundColor: "#fff",
             webPreferences: {
                 nodeIntegration: true,
-                enableRemoteModule: true,
+                contextIsolation: false,
             },
             icon: __dirname + '/images/chart.ico'
         });
@@ -413,15 +411,16 @@ let app_Trend = {
                     plugins:[{
                         afterDraw: chart => {
                             var ctx = chart.chart.ctx;
+                            var chartArea = chart.chart.chartArea;
                             let y = 25;
-                            let x = -1 * (ctx.canvas.clientWidth / 3.25);
+                            let x = -1 * (chartArea.top + chartArea.bottom) / 2;
                             let pen = this.trend.pens.find(x => x.name === this.selectedPen);
                             if (pen){
                                 ctx.save();
                                 ctx.font = "bold 14px";
                                 ctx.fillStyle = "white";
                                 ctx.rotate(-3.141/2);
-                                ctx.textAlign = 'center';        
+                                ctx.textAlign = 'center';
                                 ctx.fillText(`${pen.description}`, x, y);
                                 ctx.fillText(`[${pen.name}]`, x, y+15);
                                 ctx.restore();
@@ -715,7 +714,7 @@ let app_Trend = {
                 backgroundColor: "#fff",
                 webPreferences: {
                     nodeIntegration: true,
-                    enableRemoteModule: true,
+                    contextIsolation: false,
                 },
                 icon: __dirname + '/images/chart.ico'
             });
@@ -763,7 +762,7 @@ let app_Trend = {
             backgroundColor: "#fff",
             webPreferences: {
                 nodeIntegration: true,
-                enableRemoteModule: true,
+                contextIsolation: false,
             },
             icon: __dirname + '/images/chart.ico'
         });
@@ -867,7 +866,7 @@ let app_Trend = {
             backgroundColor: "#fff",
             webPreferences: {
                 nodeIntegration: true,
-                enableRemoteModule: true,
+                contextIsolation: false,
             },
             icon: __dirname + '/images/chart.ico'
         });
@@ -933,8 +932,8 @@ let app_Trend = {
             show: false,
             webPreferences: {
                 nodeIntegration: true,
+                contextIsolation: false,
                 webviewTag: true,
-                enableRemoteModule: true,
                 },
             icon: __dirname + '/images/chart.ico'   
         });
