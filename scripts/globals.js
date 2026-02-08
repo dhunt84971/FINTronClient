@@ -8,7 +8,20 @@ const ipc = require("electron").ipcRenderer;
 const fs = require("fs");
 const { jsPDF } = require("jspdf");
 
-const settingsFile = ".settings";
+const path = require("path");
+const userDataPath = remote.app.getPath("userData");
+const settingsFile = path.join(userDataPath, ".settings");
+
+// Migrate legacy settings from home directory if needed.
+const legacySettingsFile = path.join(remote.app.getPath("home"), ".settings");
+if (!fs.existsSync(settingsFile) && fs.existsSync(legacySettingsFile)) {
+    if (!fs.existsSync(userDataPath)) {
+        fs.mkdirSync(userDataPath, { recursive: true });
+    }
+    fs.copyFileSync(legacySettingsFile, settingsFile);
+    console.log("Migrated settings from " + legacySettingsFile + " to " + settingsFile);
+}
+
 const libAppSettings = require("lib-app-settings");
 const appSettings = new libAppSettings(settingsFile);
 
