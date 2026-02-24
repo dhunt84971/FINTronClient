@@ -40,6 +40,25 @@ function ValidTime(input){
     }
 }
 
+function ValidDate(input){
+    if (moment(input.value, dateFormat, true).isValid()){
+        input.classList.remove("invalid");
+        txtDuration.classList.remove("invalid");
+        UpdateDuration();
+    }
+    else{
+        input.classList.add("invalid");
+        txtDuration.classList.add("invalid");
+        txtDuration.value = "N/A";
+    }
+    if (TimeRangeIsValid()){
+        btnAccept.classList.remove("btnDisabled");
+    }
+    else{
+        btnAccept.classList.add("btnDisabled");
+    }
+}
+
 function UpdateDuration(){
     txtDuration.value = GetDuration();
 }
@@ -84,6 +103,14 @@ dpEndTime.addEventListener("change", () =>{
     ValidTime(dpEndTime);
 });
 
+document.getElementById("dpStartDate").addEventListener("change", () =>{
+    ValidDate(document.getElementById("dpStartDate"));
+});
+
+document.getElementById("dpEndDate").addEventListener("change", () =>{
+    ValidDate(document.getElementById("dpEndDate"));
+});
+
 document.getElementById("btnNow").addEventListener("click", () =>{
     MoveToNow();
 });
@@ -102,8 +129,8 @@ function FormatTime(input, date, instance){
 function TimeRangeIsValid(){
     if (!moment(dpStartTime.value, timeFormat).isValid()){return false;}
     if (!moment(dpEndTime.value, timeFormat).isValid()){return false;}
-    if (!moment(dpStartDate.dateSelected).isValid()){return false;}
-    if (!moment(dpStartTime.dateSelected).isValid()){return false;}
+    if (!moment(dpStartDate.el.value, dateFormat, true).isValid()){return false;}
+    if (!moment(dpEndDate.el.value, dateFormat, true).isValid()){return false;}
     var start = moment(GetStartTime(), dateTimeFormat).toDate();
     var end = moment(GetEndTime(), dateTimeFormat).toDate();
     if (moment(end).diff(moment(start)) < 0 ){return false;}
@@ -112,12 +139,12 @@ function TimeRangeIsValid(){
 }
 
 function GetStartTime(){
-    var retValue = moment(dpStartDate.dateSelected).format(dateFormat) + " " + dpStartTime.value;
+    var retValue = dpStartDate.el.value + " " + dpStartTime.value;
     return retValue;
 }
 
 function GetEndTime(){
-    var retValue = moment(dpEndDate.dateSelected).format(dateFormat) + " " + dpEndTime.value;
+    var retValue = dpEndDate.el.value + " " + dpEndTime.value;
     return retValue;
 }
 
