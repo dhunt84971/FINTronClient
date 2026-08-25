@@ -20,11 +20,11 @@
     "jspdf": "^2.5.2",
     "lib-app-settings": "^1.1.1",
     "moment": "^2.30.1",
-    "mssql": "^11.0.1",
+    "mssql": "^9.3.2",
     "timepicker": "^1.14.1"
   },
   "devDependencies": {
-    "electron": "^33.3.1",
+    "electron": "^22.3.27",
     "electron-builder": "^25.1.8"
   },
   "scripts": {
@@ -51,7 +51,8 @@
       "icon": "build/chart.ico"
     },
     "nsis": {
-      "guid": "53dcdd22-b745-5ea4-9353-76be2d592736"
+      "guid": "53dcdd22-b745-5ea4-9353-76be2d592736",
+      "artifactName": "${productName}-Setup-${version}-win7.${ext}"
     }
   }
 }
