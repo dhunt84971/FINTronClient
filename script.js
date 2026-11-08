@@ -56,6 +56,10 @@ document.getElementById("btnAppAbout").addEventListener("click", () => {
     SelectAppBtn("btnAppAbout");
     SelectAppWindow("winAbout");
 });
+// Only visible in kiosk mode, where there is no window frame to close.
+document.getElementById("btnAppExit").addEventListener("click", () => {
+    remote.getCurrentWindow().close();
+});
 //#endregion APP NAV BUTTONS
 
 

@@ -9,6 +9,12 @@ var txtMax = document.getElementById("txtMax");
 var chkLogarithmic = document.getElementById("chkLogarithmic");
 var colorPen = document.getElementById("colorPen");
 
+// On a touch panel the native colour picker is unreachable, so a grid of
+// swatches writes colorPen.value instead and everything that reads it - UpdatePen
+// below included - is unchanged.
+var penSwatches = (window.touchUI && touchUI.enabled) ?
+    touchDialogs.colorSwatches(colorPen) : null;
+
 //#region PEN MODIFIER FUNCTIONS
 function UpdatePen(){
     pickedPen.min = txtMin.value;
@@ -45,7 +51,17 @@ function InitPageObjects(){
     }
     console.log("color = "  + pickedPen.color);
     colorPen.value = pickedPen.color;
+    if (penSwatches) penSwatches.refresh();
     UpdateRange();
+}
+
+/// Fits the window to the content in touch mode. Choosing Manual brings in the
+/// "Apply to all with units of" row, and the window has been trimmed to the
+/// content it had without it, so there is no spare height left for the new row
+/// to use - the buttons at the foot are pushed out of the window instead.
+function RefitWindow(){
+    if (!window.touchUI) return;
+    window.requestAnimationFrame(function () { touchUI.fitHeight(); });
 }
 
 function UpdateRange(){
@@ -105,6 +121,9 @@ electron.ipcRenderer.on('penData', (event, pen) => {
         if (!pickedPen.type) pickedPen.type = 0;
         if (!pickedPen.units) pickedPen.units = "";
         InitPageObjects();
+        // The optional rows above are now in or out, so the window can be
+        // trimmed to what the content actually needs.
+        RefitWindow();
     }
     else{
         document.getElementById("txtTitle").innerText = "Error - no pen";
@@ -125,10 +144,12 @@ document.getElementById("btnDone").addEventListener("click", () =>{
 
 optAuto.addEventListener("change", ()=>{
     UpdateRange();
+    RefitWindow();
 });
 
 optManual.addEventListener("change", ()=>{
     UpdateRange();
+    RefitWindow();
 });
 
 document.getElementById("btnRemovePen").addEventListener("click", () =>{

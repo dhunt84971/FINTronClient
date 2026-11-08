@@ -59,7 +59,20 @@ let globals = {
 
     //#region NOTIFICATION WINDOWS
 
+   // In touchscreen mode these go to the in-page dialogs in touchDialogs.js.
+   // A native message box is driven by the OS, not by the application, so on a
+   // panel with no keyboard its button is the only thing a finger can reach -
+   // and nothing else in the window can be touched until it is dismissed.
+
+   isTouchMode: function () {
+       return !!(window.touchUI && window.touchUI.enabled && window.touchDialogs);
+   },
+
    showWarningMessageBox: function (message) {
+       if (this.isTouchMode()) {
+           return window.touchDialogs.warning(message);
+       }
+
        const options = {
            type: "warning",
            title: "Warning",
@@ -71,6 +84,10 @@ let globals = {
    },
 
    showOKMessageBox: function (message) {
+       if (this.isTouchMode()) {
+           return window.touchDialogs.message(message);
+       }
+
        const options = {
            type: "info",
            title: "Information",
@@ -79,6 +96,17 @@ let globals = {
        };
 
        dialog.showMessageBox(null, options);
+   },
+
+   /// Yes/no that works in both modes. Prefer this over showConfirmationBox
+   /// below, which can only ever be the native dialog because it answers
+   /// synchronously.
+   confirmAsync: function (message) {
+       if (this.isTouchMode()) {
+           return window.touchDialogs.confirm(message);
+       }
+
+       return Promise.resolve(this.showConfirmationBox(message));
    },
 
    showConfirmationBox: function (message) {

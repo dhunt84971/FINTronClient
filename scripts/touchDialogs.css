@@ -1,0 +1,210 @@
+/*
+ * The in-page dialogs that stand in for the native ones in touchscreen mode:
+ * message boxes, the file browser and the colour swatches.
+ *
+ * These are styled on their own rather than borrowing .btn and .inputEntry,
+ * because every window in the application defines those classes slightly
+ * differently and a dialog that appears in all of them should not change shape
+ * from one to the next.
+ *
+ * Sizes come from --touch_target and --touch_font, which touch.js fixes in
+ * pixels for the window, and never from vh directly. Opening the keyboard grows
+ * the window to make room for it, so a vh here would grow with it: the colour
+ * swatches did exactly that, gaining a row and pushing the buttons out of the
+ * Pen Properties window while the keypad was up.
+ */
+.tdOverlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 8000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.tdDialog {
+    display: flex;
+    flex-direction: column;
+    min-width: min(420px, 100%);
+    max-width: min(760px, 100%);
+    max-height: 100%;
+    background: #2a2d30;
+    color: white;
+    border: 2px solid #08a9c5;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.tdDialog .tdTitle {
+    flex: 0 0 auto;
+    padding: 12px 16px;
+    background: #08a9c5;
+    color: #1B1D1F;
+    font: 700 calc(var(--touch_font, 15px) * 1.08) "Roboto", Helvetica, Arial, san-serif;
+}
+
+.tdDialog.tdWarning .tdTitle {
+    background: #f0c871;
+}
+
+.tdDialog .tdBody {
+    flex: 1 1 auto;
+    padding: 18px 16px;
+    font: var(--touch_font, 15px)/1.45 "Roboto", Helvetica, Arial, san-serif;
+    white-space: pre-wrap;
+    overflow: auto;
+}
+
+.tdDialog .tdFooter {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 12px 16px;
+    background: transparent;
+}
+
+.tdDialog .tdSpacer {
+    flex: 1 1 auto;
+}
+
+.tdDialog .tdBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: clamp(96px, 20vw, 160px);
+    min-height: var(--touch_target, 44px);
+    padding: 0 16px;
+    background: var(--btnBoxTop_bgColor, #5a5a5a);
+    color: white;
+    border: 1px solid #000;
+    border-radius: 6px;
+    font: 700 var(--touch_font, 15px) "Roboto", Helvetica, Arial, san-serif;
+    white-space: nowrap;
+}
+
+.tdDialog .tdBtnPrimary {
+    background: #08a9c5;
+    color: #1B1D1F;
+}
+
+.tdDialog .tdBtn:active {
+    filter: brightness(1.4);
+}
+
+/*#region FILE BROWSER */
+.tdDialog.tdFiles {
+    width: min(760px, 100%);
+    height: min(640px, 100%);
+}
+
+.tdDialog .tdPath {
+    flex: 0 0 auto;
+    padding: 10px 16px;
+    background: #1b1d1f;
+    color: #9fd8e3;
+    font: calc(var(--touch_font, 15px) * 0.85) "Roboto", Helvetica, Arial, san-serif;
+    word-break: break-all;
+}
+
+.tdDialog .tdList {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    background: #3a3d40;
+}
+
+.tdDialog .tdItem {
+    display: flex;
+    align-items: center;
+    min-height: var(--touch_target, 44px);
+    padding: 0 16px;
+    border-bottom: 1px solid #2a2d30;
+    font: var(--touch_font, 15px) "Roboto", Helvetica, Arial, san-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tdDialog .tdItemDir {
+    color: #f0c871;
+    font-weight: 600;
+}
+
+.tdDialog .tdItemSelected {
+    background: #08a9c5;
+    color: #1B1D1F;
+}
+
+.tdDialog .tdItem:active {
+    filter: brightness(1.3);
+}
+
+.tdDialog .tdEmpty {
+    padding: 16px;
+    color: #b0b0b0;
+    font: italic calc(var(--touch_font, 15px) * 0.92) "Roboto", Helvetica, Arial, san-serif;
+}
+
+.tdDialog .tdNameRow {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+}
+
+.tdDialog .tdNameLabel {
+    flex: 0 0 auto;
+    font: 600 var(--touch_font, 15px) "Roboto", Helvetica, Arial, san-serif;
+}
+
+.tdDialog .tdNameInput {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: var(--touch_target, 44px);
+    padding: 0 10px;
+    color: black;
+    border: 0;
+    border-radius: 6px;
+    font: var(--touch_font, 15px) "Roboto", Helvetica, Arial, san-serif;
+}
+/*#endregion FILE BROWSER */
+
+/*#region COLOUR SWATCHES */
+.tdSwatches {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+    /* The row these sit in is the one the markup gives no padding at all,
+       because a native colour button needed none. Three rows of swatches do,
+       or the grid sits hard against the rule above it - the vertical margin
+       here matches the 5px padding every other row in the dialog has. */
+    margin: 6px 0 6px 10px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.tdSwatch {
+    height: calc(var(--touch_target, 44px) * 0.6);
+    border: 2px solid #1b1d1f;
+    border-radius: 4px;
+}
+
+.tdSwatchSelected {
+    border-color: white;
+    box-shadow: 0 0 0 2px #08a9c5;
+}
+
+.tdHiddenColor {
+    display: none !important;
+}
+/*#endregion COLOUR SWATCHES */

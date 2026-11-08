@@ -1,5 +1,8 @@
 const { app, BrowserWindow, ipcMain, screen } = require("electron");
 app.commandLine.appendSwitch("no-sandbox");
+// Touchscreen mode is built on pointer events, which Chromium only reports as
+// touch when it believes a touch device is present.
+app.commandLine.appendSwitch("touch-events", "enabled");
 const remoteMain = require("@electron/remote/main");
 remoteMain.initialize();
 const fs = require("fs");
@@ -29,6 +32,20 @@ function loadWindowBounds() {
     };
   } catch (err) {
     return null;
+  }
+}
+
+/// Kiosk mode has to be known before the window exists, so it is read straight
+/// from the settings file the same way the saved bounds are.
+function loadTouchFlags() {
+  try {
+    const settings = JSON.parse(fs.readFileSync(getSettingsPath(), "utf8"));
+    return {
+      touchMode: settings.touchMode === true,
+      kioskMode: settings.kioskMode === true
+    };
+  } catch (err) {
+    return { touchMode: false, kioskMode: false };
   }
 }
 
@@ -68,6 +85,8 @@ let win;
 
 function createWindow() {
   const saved = loadWindowBounds();
+  const flags = loadTouchFlags();
+  const kiosk = flags.touchMode && flags.kioskMode;
   let winOptions = {
     width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT, show: false, backgroundColor: "#fff",
     webPreferences: {
@@ -76,8 +95,16 @@ function createWindow() {
       webviewTag: true
     }
   };
+  // In kiosk mode the panel has no taskbar and no window frame to grab, so the
+  // saved bounds are ignored and the window owns the screen. The Exit button in
+  // the nav bar is the way out.
+  if (kiosk) {
+    winOptions.fullscreen = true;
+    winOptions.frame = false;
+  }
+
   let savedMaximized = false;
-  if (saved) {
+  if (saved && !kiosk) {
     winOptions.width = saved.width;
     winOptions.height = saved.height;
     if (boundsAreOnScreen(saved)) {
@@ -126,6 +153,9 @@ function createWindow() {
 
   win.on("close", () => {
     if (unmaximizeTimer) { clearTimeout(unmaximizeTimer); unmaximizeTimer = null; }
+    // A kiosk window never had the user's chosen size, so it must not overwrite
+    // the bounds they will go back to when kiosk mode is turned off.
+    if (kiosk) return;
     const normalBounds = win.getNormalBounds();
     saveWindowBounds({
       x: normalBounds.x,

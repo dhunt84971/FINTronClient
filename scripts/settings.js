@@ -1,9 +1,27 @@
 var settings = {};
 
 /// Save settings to the .settings file.
-function saveSettingstoFile(settings) {
-    var json = JSON.stringify(settings);
-    fs.writeFileSync(settingsFile, json, "utf8");
+///
+/// The settings passed in are merged into whatever the file already holds
+/// rather than replacing it. The settings dialog only knows about its own
+/// fields, and the file is also home to the main window's saved bounds, the
+/// popup window sizes and the touchscreen flags - a straight overwrite here
+/// erased all of them.
+function saveSettingstoFile(newSettings) {
+    var existing = {};
+    try {
+        existing = JSON.parse(fs.readFileSync(settingsFile, "utf8"));
+        if (existing === null || typeof existing !== "object") {
+            existing = {};
+        }
+    }
+    catch (err) {
+        existing = {};  // No settings file yet, or it is unreadable.
+    }
+
+    var merged = Object.assign(existing, newSettings);
+    fs.writeFileSync(settingsFile, JSON.stringify(merged), "utf8");
+    settings = merged;
 }
 
 function saveWindowSize(winName, winSize){
