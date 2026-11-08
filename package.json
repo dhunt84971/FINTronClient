@@ -1,7 +1,7 @@
 {
   "name": "FINTronClient",
   "productname": "FIN Client Electron App",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "FIN Client Electron App.",
   "main": "main.js",
   "author": {
@@ -44,7 +44,9 @@
       ],
       "category": "Office",
       "maintainer": "Dave Hunt",
-      "executableArgs": ["--no-sandbox"]
+      "executableArgs": [
+        "--no-sandbox"
+      ]
     },
     "win": {
       "target": "nsis",
