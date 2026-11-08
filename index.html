@@ -6,7 +6,9 @@
     <title>FIN Electron Client</title>
     <link rel="stylesheet" href="layout_style.css">
     <link rel="stylesheet" href="style.css">
-    
+    <link rel="stylesheet" href="scripts/touch.css">
+    <link rel="stylesheet" href="scripts/touchDialogs.css">
+
 </head>
   
   <body>
@@ -20,6 +22,10 @@
           <div class="btn btnApp hide" id="btnAppReports">Reports</div>
           <div class="btn btnApp" id="btnAppSettings">Settings</div>
           <div class="btn btnApp hide" id="btnAppAbout">About</div>
+          <div class="horizSpacer"></div>
+          <!-- Kiosk mode hides the window frame, so there has to be a way out
+               that a finger can reach. touch.css shows this only then. -->
+          <div class="btn btnApp" id="btnAppExit">Exit</div>
       </div>
       <div class="horDivider"></div>
       <div class="appWindow" id="winLive"></div>
@@ -98,7 +104,7 @@
               <input class="inputEntry" id="txtHost">
           </div>
           <div class="vbox settingsLabel indent">SQL TcpIp Port
-              <input class="inputEntry" id="txtPort">
+              <input class="inputEntry" id="txtPort" data-osk="numeric">
           </div>
         </div>
         <div class="hboxSettings">
@@ -118,14 +124,24 @@
           </div>
         </div>
         <div class="vbox"></div>
-        <div class="vbox">
-          <div class="hboxSettings">
-            <div class="vbox">
-              <div class="btn btnSettings" id="btnTestSQLConnection">TEST SQL CONNECTION</div>
-            </div>
-            <div class="vbox">
-              <div class="btn btnSettings" id="btnTestFINConnection">TEST FIN CONNECTION</div>
-            </div>
+        <div class="vbox settingsLabel">TEST CONNECTIONS -</div>
+        <div class="hboxSettings">
+          <div class="vbox settingsLabel">
+              <div class="btn btnSettings" id="btnTestSQLConnection">SQL</div>
+          </div>
+          <div class="vbox settingsLabel indent">
+              <div class="btn btnSettings" id="btnTestFINConnection">FIN</div>
+          </div>
+        </div>
+        <div class="vbox"></div>
+        <div class="vbox settingsLabel">TOUCHSCREEN -</div>
+        <div class="hboxSettings">
+          <div class="vbox settingsLabel">Touchscreen Mode
+              <div class="btn btnSettings btnToggle" id="btnTouchMode">OFF</div>
+          </div>
+          <div class="vbox settingsLabel indent">Kiosk / Fullscreen
+              <div class="btn btnSettings btnToggle" id="btnKioskMode">OFF</div>
+              <div class="settingsNote">Takes effect on restart.</div>
           </div>
         </div>
         <div class="vboxFill"></div>
@@ -156,6 +172,9 @@
 
     <!-- Global non-specific Scripts -->
     <script src="scripts/globals.js"></script>
+    <script src="scripts/touch.js"></script>
+    <script src="scripts/osk.js"></script>
+    <script src="scripts/touchDialogs.js"></script>
     <script src="scripts/database.js"></script>
     <script src="scripts/settings.js"></script>
     

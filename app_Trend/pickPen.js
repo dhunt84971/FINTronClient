@@ -63,13 +63,15 @@ function loadTagsByLocation(recs, location){
 var startX, startWidth;
 var leftDiv = document.getElementById("leftSideLocations");
 
+// The splitter is driven by pointer events, which cover the mouse, a pen and a
+// finger alike - so there is no separate mouse path to keep in step. The move
+// and release are delivered through touchUI.pointerDrag's pointer capture
+// rather than by listening on the document.
 function initVDrag(e) {
   startX = e.clientX;
   console.log("Initializing resize drag....");
   console.log(e.target.id);
   startWidth = parseInt(document.defaultView.getComputedStyle(leftDiv).width, 10);
-  document.documentElement.addEventListener('mousemove', doVDrag, false);
-  document.documentElement.addEventListener('mouseup', stopVDrag, false);
 }
 
 function doVDrag(e) {
@@ -79,8 +81,6 @@ function doVDrag(e) {
 }
 
 function stopVDrag(e) {
-  document.documentElement.removeEventListener('mousemove', doVDrag, false);
-  document.documentElement.removeEventListener('mouseup', stopVDrag, false);
   // Save the new size to the settings file.
   saveWidths();
 }
@@ -213,7 +213,11 @@ document.getElementById("btnClearSearch").addEventListener("click", ()=>{
 });
 
 //#region RESIZABLE SPLITTERS
-document.getElementById("vSplitter").addEventListener("mousedown", initVDrag, false);
+touchUI.pointerDrag(document.getElementById("vSplitter"), {
+    onStart: initVDrag,
+    onMove: doVDrag,
+    onEnd: stopVDrag
+});
 //#endregion RESIZABLE SPLITTERS
 
 //#endregion EVENT HANDLERS

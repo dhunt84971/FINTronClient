@@ -783,4 +783,23 @@ canvas {
   font: 12px "Roboto", Helvetica, Arial, san-serif;
 }
 
+/* The touchscreen and kiosk switches. They are .btn divs rather than
+   checkboxes so that they are a finger-sized target even before touchscreen
+   mode - which is the one setting that has to be reachable without it. */
+.btnToggle {
+  width: 180px;
+  margin-top: 5px;
+}
+
+.btnToggle_on {
+  background-color: var(--btnAppSelected_bgColor) !important;
+  color: var(--btnAppSelected_txColor) !important;
+}
+
+.settingsNote {
+  color: #b0b0b0;
+  font: italic 11px "Roboto", Helvetica, Arial, san-serif;
+  margin-top: 4px;
+}
+
 /* #endregion SETTINGS */

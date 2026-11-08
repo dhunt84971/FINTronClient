@@ -1,0 +1,178 @@
+/*
+ * The data entry window.
+ *
+ * Sizes are fixed pixels, not viewport units, because the window itself is a
+ * fixed size: the same keyboard, the same keys, in the same place, whichever
+ * window asked for it. The two pages that use this - entryAlpha.html and
+ * entryNumeric.html - differ only in the keys osk builds into them, so the
+ * windows they open are the same height.
+ */
+:root {
+    --entry_bg: #2a2d30;
+    --entry_key: #5a5a5a;
+    --entry_keyText: white;
+    --entry_accent: #08a9c5;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Roboto", Helvetica, Arial, san-serif;
+}
+
+:not(input) {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+html,
+body {
+    height: 100%;
+    background: var(--entry_bg);
+    color: white;
+    overflow: hidden;
+    touch-action: manipulation;
+}
+
+.entryBox {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+}
+
+/* The value, large enough to read at arm's length on a panel. */
+.entryValue {
+    flex: 0 0 auto;
+    height: 72px;
+    padding: 0 14px;
+    color: black;
+    background: white;
+    border: 2px solid #1b1d1f;
+    border-radius: 6px;
+    font-size: 34px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.entryValue:focus {
+    outline: none;
+    border-color: var(--entry_accent);
+}
+
+.entryKeys {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-height: 0;
+}
+
+.entryRow {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+/* The keys may shrink below their natural width (min-width: 0), which is what
+   keeps a row of eleven inside the window instead of overflowing it. */
+.entryKey {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--entry_key);
+    color: var(--entry_keyText);
+    border: 1px solid #000;
+    border-radius: 6px;
+    font-size: 26px;
+    font-weight: 600;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.entryKey:active {
+    background: var(--entry_accent);
+    color: #1b1d1f;
+}
+
+/* A key labelled with a word needs the room to say it. */
+.entryKeyWord {
+    flex: 1.4 1 0;
+    font-size: 18px;
+}
+
+/* Four keys and the gaps between them, as on the AppendHMIStudio keyboard. */
+.entryRow .entryKeySpace {
+    flex: 4 1 0;
+}
+
+.entryKeys.entryShifted .entryKeyShift {
+    background: var(--entry_accent);
+    color: #1b1d1f;
+}
+
+/* The numeric pad is a grid rather than rows, so the digits line up in columns
+   the way they do on a calculator. */
+.entryKeys.entryPad {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+}
+
+.entryKeys.entryPad .entryKey {
+    font-size: 34px;
+}
+
+.entryKeys.entryPad .entryKeyWord {
+    font-size: 24px;
+}
+
+/* The sixteenth cell of the pad: it holds the grid's shape and nothing else. */
+.entryKeyBlank {
+    background: transparent;
+    border-color: transparent;
+    pointer-events: none;
+}
+
+.entryFooter {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 10px;
+    height: 64px;
+}
+
+.entrySpacer {
+    flex: 1 1 auto;
+}
+
+.entryBtn {
+    flex: 0 0 auto;
+    min-width: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #4a4d50;
+    color: white;
+    border: 1px solid #000;
+    border-radius: 6px;
+    font-size: 22px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.entryBtnPrimary {
+    background: var(--entry_accent);
+    color: #1b1d1f;
+}
+
+.entryBtn:active {
+    filter: brightness(1.3);
+}

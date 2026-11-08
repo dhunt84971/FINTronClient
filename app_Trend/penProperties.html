@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <title>Pen Properties</title>
     <link rel="stylesheet" href="penProperties.css">
+    <link rel="stylesheet" href="../scripts/touch.css">
+    <link rel="stylesheet" href="../scripts/touchDialogs.css">
 </head>
   
   <body>
@@ -26,11 +28,11 @@
           </div>
           <div class="hbox">
             <div class="label indent" style="width:120px">Minimum Value:</div>
-            <input class="inputEntry leftMargin" id="txtMin">
+            <input class="inputEntry leftMargin" id="txtMin" data-osk="numeric">
           </div>
           <div class="hbox">
             <div class="label indent" style="width:120px">Maximum Value:</div>
-            <input class="inputEntry leftMargin" id="txtMax">
+            <input class="inputEntry leftMargin" id="txtMax" data-osk="numeric">
           </div>
           <div class="hbox hide indent" id="boxApplyRangeToUnits">
             <input type="checkbox" id="chkApplyRangeToUnits">
@@ -60,6 +62,9 @@
         </div>
       </div>
     </div>
+    <script src="../scripts/touch.js"></script>
+    <script src="../scripts/osk.js"></script>
+    <script src="../scripts/touchDialogs.js"></script>
     <script src="penProperties.js"></script>
 </body>
 </html>

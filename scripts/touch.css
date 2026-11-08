@@ -1,0 +1,251 @@
+/*
+ * Touchscreen mode styling.
+ *
+ * Everything here is scoped under body.touch, so with the mode off the
+ * application looks and behaves exactly as it did. Sizes are clamped against
+ * the viewport rather than fixed, so the same build works on a small panel and
+ * on a desktop monitor.
+ *
+ * TOUCH_TARGET is the smallest thing a fingertip should have to hit.
+ */
+body.touch {
+    --touch_target: clamp(44px, 7.5vh, 62px);
+    --touch_font: clamp(15px, 2.4vh, 20px);
+    touch-action: manipulation;          /* no double-tap zoom */
+}
+
+/*#region HIT TARGETS */
+body.touch .btn,
+body.touch .trend_btn,
+body.touch .btnApp,
+body.touch .btnSettings,
+body.touch .btnDialog,
+body.touch .btnMenu {
+    min-height: var(--touch_target);
+    height: auto;
+    font-size: var(--touch_font);
+    padding: 8px 12px;
+    /* The popups define their own .btn as a plain block with a fixed height, so
+       its label sits at the top of a button that is now much taller than the
+       text. The main window's .btn is already laid out this way. */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+/* The toolbars have a fixed 40px height, which is shorter than the buttons
+   they now hold. */
+body.touch .top,
+body.touch .trend_top {
+    height: auto;
+    min-height: calc(var(--touch_target) + 10px);
+}
+
+/* The nav increment buttons are a long row - let them stay compact in width
+   but still tall enough to hit. */
+body.touch .trend_btnNav {
+    min-width: clamp(54px, 7vw, 90px);
+}
+
+/* Buttons sized for a 13px font clip their own label once it grows, because
+   they sit in a flex row and shrink to their min-width over hidden overflow. */
+body.touch .btnApp,
+body.touch .trend_btnBar,
+body.touch .trend_btnApp {
+    width: auto;
+    flex: 0 0 auto;
+}
+
+body.touch .btnSettings {
+    width: auto;
+    min-width: 180px;
+}
+
+/* The dialog buttons are a fixed 120px, which a larger label no longer fits -
+   "Remove Pen" wraps onto two lines. */
+body.touch .btnDialog {
+    width: auto;
+    min-width: 120px;
+    white-space: nowrap;
+}
+
+/* The trend screen keeps two rows of navigation buttons in a fixed 80px strip
+   below a chart that is not allowed to shrink (flex: 1 0 auto). Taller buttons
+   need both of those to give, or the second row falls off the window. */
+body.touch .trend_bottom {
+    height: auto;
+    min-height: 0;
+}
+
+body.touch .trend_bottom_filler {
+    height: 10px;
+}
+
+body.touch .trend_center_left_top {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* The popup windows (pickPen is the one with content to spare) stack a fixed
+   40px .top, a .center that is not allowed to shrink, and a fixed 40px .bottom
+   inside a container pinned to the window height. Touch-sized buttons make the
+   bottom bar taller than 40px, and with nothing able to give, the bar is pushed
+   off the foot of the window and the Close / Add buttons are cut in half. */
+body.touch .center {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+body.touch .bottom {
+    flex: 0 0 auto;
+    height: auto;
+}
+
+body.touch .btnMenu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+body.touch .contextMenu {
+    width: clamp(220px, 40vw, 320px);
+}
+
+/* The pen buttons grow with their text rather than clipping it. */
+body.touch .trend_btnPen {
+    min-height: var(--touch_target);
+}
+
+/* The gaps between the pens are the drop targets for a reorder, and 5px of
+   them is not something a fingertip can land on. */
+body.touch .trend_pen_spacer {
+    min-height: 18px;
+}
+
+body.touch .datapoint,
+body.touch .div_treeview_item {
+    min-height: var(--touch_target);
+    display: flex;
+    align-items: center;
+    font-size: var(--touch_font);
+    padding: 6px 6px 6px 8px;
+}
+
+/* The treeview's expand arrows are 10px CSS triangles - far too small for a
+   fingertip, so the borders that draw them are doubled. */
+body.touch .div_treeview_marker {
+    margin-top: 0;
+    margin-right: 12px;
+    width: 20px;
+    height: 20px;
+}
+
+body.touch .div_treeview_arrow_dnrt {
+    border-left-width: 20px;
+    border-bottom-width: 20px;
+}
+
+body.touch .div_treeview_arrow_right {
+    border-top-width: 10px;
+    border-left-width: 20px;
+    border-bottom-width: 10px;
+}
+
+/* The pickPen splitter has to be grabbable without a cursor to aim with. */
+body.touch .vsplit {
+    min-width: 22px;
+}
+/*#endregion HIT TARGETS */
+
+/*#region ENTRY FIELDS */
+body.touch .inputEntry {
+    min-height: var(--touch_target);
+    height: auto;
+    font-size: var(--touch_font);
+    padding-left: 10px;
+}
+
+body.touch select {
+    min-height: var(--touch_target);
+    font-size: var(--touch_font);
+}
+
+/* Radios and checkboxes have no size of their own worth setting, so they are
+   scaled from their top left corner and given the room that takes. */
+body.touch input[type="radio"],
+body.touch input[type="checkbox"] {
+    transform: scale(2);
+    transform-origin: left center;
+    margin-right: 22px;
+    margin-left: 6px;
+}
+
+body.touch label {
+    font-size: var(--touch_font);
+}
+/*#endregion ENTRY FIELDS */
+
+/*#region SCROLLING */
+body.touch ::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+body.touch ::-webkit-scrollbar-thumb {
+    background: #8a8a8a;
+    border-radius: 10px;
+    border: 4px solid transparent;
+    background-clip: padding-box;
+}
+
+body.touch ::-webkit-scrollbar-track {
+    background: #2a2a2a;
+}
+
+/* Lists are flicked, not dragged by their scrollbar. */
+body.touch #lstTags,
+body.touch #lstLocations {
+    -webkit-overflow-scrolling: touch;
+}
+/*#endregion SCROLLING */
+
+/*#region NO POINTER AFFORDANCES */
+/* A finger cannot hover, so the hover tooltip only ever appears stuck on after
+   a tap. The same goes for the hover highlights, which would stay lit on the
+   last thing touched. */
+body.touch [aria-label]:hover:after {
+    opacity: 0;
+    transition-delay: 0s;
+}
+
+body.touch .btn:hover,
+body.touch .trend_btn:hover,
+body.touch .btnMenu:hover,
+body.touch .datapoint:hover,
+body.touch .div_treeview_item:hover,
+body.touch .inputEntry:hover,
+body.touch .vsplit:hover {
+    cursor: default;
+}
+
+/* Pressed feedback instead, since there is no hover to show what was hit. */
+body.touch .btn:active,
+body.touch .trend_btn:active,
+body.touch .btnMenu:active,
+body.touch .datapoint:active,
+body.touch .div_treeview_item:active {
+    filter: brightness(1.5);
+}
+/*#endregion NO POINTER AFFORDANCES */
+
+/*#region KIOSK */
+/* The Exit button only exists when the window has no frame to close it with. */
+#btnAppExit {
+    display: none;
+}
+
+body.touch.kiosk #btnAppExit {
+    display: flex;
+}
+/*#endregion KIOSK */

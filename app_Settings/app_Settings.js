@@ -8,10 +8,27 @@ function getSettingsfromDialog() {
         password: document.getElementById("txtPassword").value,
         database: document.getElementById("txtDatabase").value,
         port: document.getElementById("txtPort").value,
-        fin: document.getElementById("txtFinLinkedServer").value
+        fin: document.getElementById("txtFinLinkedServer").value,
+        touchMode: touchUI.enabled,
+        kioskMode: touchUI.kiosk
     };
     return settings;
 }
+
+//#region TOUCHSCREEN SETTINGS
+var btnTouchMode = document.getElementById("btnTouchMode");
+var btnKioskMode = document.getElementById("btnKioskMode");
+
+function showToggleState(btn, on) {
+    btn.innerText = on ? "ON" : "OFF";
+    btn.classList.toggle("btnToggle_on", on);
+}
+
+function refreshTouchToggles() {
+    showToggleState(btnTouchMode, touchUI.enabled);
+    showToggleState(btnKioskMode, touchUI.kiosk);
+}
+//#endregion TOUCHSCREEN SETTINGS
 
 function updateSettings(settings){
     saveSettingstoFile(settings);
@@ -28,6 +45,20 @@ function updateSettings(settings){
 //#endregion SETTINGS FUNCTIONS
 
 //#region EVENT HANDLERS
+
+// The touchscreen switch applies as it is tapped rather than waiting for APPLY:
+// it is the one setting whose effect the operator needs to see before they can
+// comfortably use the rest of the screen.
+btnTouchMode.addEventListener("click", ()=>{
+    touchUI.setEnabled(!touchUI.enabled);
+    osk.refresh();
+    refreshTouchToggles();
+});
+
+btnKioskMode.addEventListener("click", ()=>{
+    touchUI.setKiosk(!touchUI.kiosk);
+    refreshTouchToggles();
+});
 
 document.getElementById("btnSettingsApply").addEventListener("click", ()=>{
     settings = getSettingsfromDialog();
@@ -74,6 +105,8 @@ document.getElementById("btnTestFINConnection").addEventListener("click", ()=>{
 //#region INITIALIZATION
 var appVersion = require(APPDIR + "/package.json").version;
 document.getElementById("lblVersion").innerText = "v" + appVersion;
+
+refreshTouchToggles();
 
 loadSettingsfromFile(settingsFile, function(err, settings) {
     if (!err) {

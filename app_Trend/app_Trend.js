@@ -154,7 +154,17 @@ let app_Trend = {
                 }
             ]
         };
-        const result = await dialog.showSaveDialog(null, options);
+        // The native dialog cannot be typed into by the application's own
+        // on-screen keyboard, so a touch panel gets the in-page file browser.
+        const result = globals.isTouchMode() ?
+            await touchDialogs.pickFile({
+                mode: "save",
+                title: "Save Trend As",
+                dir: DOCSDIR,
+                extensions: ["trd"],
+                defaultName: this.trend.name ? this.trend.name + ".trd" : ""
+            }) :
+            await dialog.showSaveDialog(null, options);
         if (result) {
             if (!result.canceled){
                 let fName = result.filePath.endsWith(".trd") ? result.filePath : result.filePath + ".trd";
@@ -181,7 +191,23 @@ let app_Trend = {
             ],
             properties: ['openFile']
         };
-        const result = await dialog.showOpenDialog(null, options);
+        // As with Save As - on a touch panel the file is chosen in-page.
+        let result;
+        if (globals.isTouchMode()) {
+            const picked = await touchDialogs.pickFile({
+                mode: "open",
+                title: "Open Trend",
+                dir: DOCSDIR,
+                extensions: ["trd"]
+            });
+            result = {
+                canceled: picked.canceled,
+                filePaths: picked.canceled ? [] : [picked.filePath]
+            };
+        }
+        else {
+            result = await dialog.showOpenDialog(null, options);
+        }
         if (result) {
             console.log(result);
             if (result.filePaths.length == 1 && !result.canceled) {
@@ -269,8 +295,9 @@ let app_Trend = {
         // Get the current window size and position.
         const pos = remote.getCurrentWindow().getPosition();
         const size = remote.getCurrentWindow().getSize();
-        let xPos = pos[0] + (size[0] / 2) - 300;
-        let yPos = pos[1] + (size[1] / 2) - 250;
+        const winSize = touchUI.popupSize(600, 250, 720, 340);
+        let xPos = pos[0] + (size[0] / 2) - (winSize.width / 2);
+        let yPos = pos[1] + (size[1] / 2) - (winSize.height / 2);
 
         let win = new remote.BrowserWindow({
             parent: remote.getCurrentWindow(),
@@ -278,8 +305,8 @@ let app_Trend = {
             modal: true,
             resizable: false,
             minimizable: false,
-            width: 600,
-            height: 250,
+            width: winSize.width,
+            height: winSize.height,
             x: xPos,
             y: yPos,
             show: false,
@@ -689,8 +716,6 @@ let app_Trend = {
         // Get the current window size and position.
         const pos = remote.getCurrentWindow().getPosition();
         const size = remote.getCurrentWindow().getSize();
-        let xPos = pos[0] + (size[0] / 2) - 300;
-        let yPos = pos[1] + (size[1] / 2) - 250;
         appSettings.loadSettingsFromFile((err, settings) => {
             let winWidth = 600;
             let winHeight = 500;
@@ -700,6 +725,12 @@ let app_Trend = {
                 winHeight = settings.pickPen[1];
                 console.log(winWidth + ", " + winHeight);
             }
+
+            const winSize = touchUI.popupSize(winWidth, winHeight, 780, 650);
+            winWidth = winSize.width;
+            winHeight = winSize.height;
+            let xPos = pos[0] + (size[0] / 2) - (winWidth / 2);
+            let yPos = pos[1] + (size[1] / 2) - (winHeight / 2);
 
             let win = new remote.BrowserWindow({
                 parent: remote.getCurrentWindow(),
@@ -742,8 +773,9 @@ let app_Trend = {
         // Get the current window size and position.
         const pos = remote.getCurrentWindow().getPosition();
         const size = remote.getCurrentWindow().getSize();
-        const winHeight = 520;
-        const winWidth = 410;
+        const propsSize = touchUI.popupSize(410, 520, 520, 800);
+        const winHeight = propsSize.height;
+        const winWidth = propsSize.width;
         let xPos = pos[0] + (size[0] / 2) - (winWidth/2);
         let yPos = pos[1] + (size[1] / 2) - (winHeight/2);
 
@@ -848,15 +880,16 @@ let app_Trend = {
         // Get the current window size and position.
         const pos = remote.getCurrentWindow().getPosition();
         const size = remote.getCurrentWindow().getSize();
-        let xPos = pos[0] + (size[0] / 2) - 170;
-        let yPos = pos[1] + (size[1] / 2) - 200;
+        const timeSize = touchUI.popupSize(340, 450, 460, 540);
+        let xPos = pos[0] + (size[0] / 2) - (timeSize.width / 2);
+        let yPos = pos[1] + (size[1] / 2) - (timeSize.height / 2);
 
         let win = new remote.BrowserWindow({
             parent: remote.getCurrentWindow(),
             ////frame: false,
             modal: true,
-            width: 340,
-            height: 450,
+            width: timeSize.width,
+            height: timeSize.height,
             resizable: false,
             minimizable: false,
             x: xPos,
@@ -1435,6 +1468,110 @@ document.addEventListener("drop", (e)=> {
     // prevent default action.
     e.preventDefault();    
 });
+// HTML5 drag and drop never fires from a touch, so on a touchscreen a pen is
+// picked up by pressing and holding it and then dropped on one of the spacers
+// between the pens - the same drop targets and the same MovePen the mouse uses.
+// Everything below is delegated from the pen container, because the pen buttons
+// are rebuilt from scratch by ReloadPens on every change.
+(function () {
+    const HOLD_MS = 400;
+    const MOVE_CANCEL_PX = 12;
+
+    var container = document.getElementById("divPenButtons");
+    var holdTimer = null;
+    var startX = 0;
+    var startY = 0;
+    var candidate = null;   // The pen row the finger went down on.
+    var picked = null;      // The pen row actually being dragged.
+    var overSpacer = null;
+
+    function cancelHold() {
+        if (holdTimer !== null) {
+            window.clearTimeout(holdTimer);
+            holdTimer = null;
+        }
+    }
+
+    function clearHighlight() {
+        if (overSpacer) {
+            overSpacer.classList.remove("trend_dragTarget");
+            overSpacer = null;
+        }
+    }
+
+    function drop() {
+        var spacer = overSpacer;
+        var pen = picked;
+
+        if (pen) {
+            pen.style.opacity = "";
+        }
+        clearHighlight();
+        picked = null;
+        candidate = null;
+
+        if (pen && spacer) {
+            app_Trend.draggedPen = pen;
+            app_Trend.MovePen(spacer);
+        }
+    }
+
+    container.addEventListener("pointerdown", (e) => {
+        if (!touchUI.enabled || e.pointerType === "mouse") return;
+
+        candidate = globals.parentContaining(e.target, "trend_penButtons");
+        if (!candidate) return;
+
+        startX = e.clientX;
+        startY = e.clientY;
+        cancelHold();
+
+        holdTimer = window.setTimeout(() => {
+            holdTimer = null;
+            picked = candidate;
+            picked.style.opacity = 0.5;
+        }, HOLD_MS);
+    });
+
+    container.addEventListener("pointermove", (e) => {
+        // Still deciding whether this is a press or a scroll.
+        if (holdTimer !== null) {
+            if (Math.abs(e.clientX - startX) > MOVE_CANCEL_PX ||
+                Math.abs(e.clientY - startY) > MOVE_CANCEL_PX) {
+                cancelHold();
+            }
+            return;
+        }
+
+        if (!picked) return;
+        e.preventDefault();
+
+        var under = document.elementFromPoint(e.clientX, e.clientY);
+        var spacer = (under && under.classList.contains("trend_pen_spacer")) ?
+            under : null;
+
+        if (spacer !== overSpacer) {
+            clearHighlight();
+            overSpacer = spacer;
+            if (overSpacer) overSpacer.classList.add("trend_dragTarget");
+        }
+    });
+
+    container.addEventListener("pointerup", () => {
+        cancelHold();
+        if (picked) {
+            // The lift must not also count as a tap on the pen, which would
+            // select it or open its properties.
+            touchUI.suppressNextClick(container);
+            drop();
+        }
+    });
+
+    container.addEventListener("pointercancel", () => {
+        cancelHold();
+        drop();
+    });
+})();
 ////#endregion PEN DRAG AND DROP
 
 //#endregion EVENT HANDLERS
@@ -1449,10 +1586,20 @@ function trend_ZoomPrev() {
     app_Trend.UpdateChart();
 };
 
-document.getElementById("trend_chart").addEventListener("contextmenu", (e) => {
-    console.log(e.clientX);
+function trend_showChartMenu(x, y) {
     var menu = document.getElementById("chartContextMenu");
-    globals.locateMenu(menu, e.clientX, e.clientY);
+    globals.locateMenu(menu, x, y);
+}
+
+document.getElementById("trend_chart").addEventListener("contextmenu", (e) => {
+    trend_showChartMenu(e.clientX, e.clientY);
+});
+
+// A finger has no right button, so the same menu opens on a long press. The
+// tap that ends the press is swallowed by touchUI so that the chart's own click
+// handler below does not immediately hide the menu again.
+touchUI.onLongPress(document.getElementById("trend_chart"), (x, y) => {
+    trend_showChartMenu(x, y);
 });
 
 document.getElementById("trend_chart").addEventListener("click", (e) => {
@@ -1681,30 +1828,5 @@ function move_handler(e) {
         }
     }
 };
-
-//#region CHART CONTEXT MENU
-function trend_ZoomPrev() {
-    app_Trend.trend.startTime = app_Trend.zoomprev_StartTime;
-    app_Trend.trend.endTime = app_Trend.zoomprev_EndTime;
-    // Redraw the chart.
-    app_Trend.UpdateChart();
-};
-
-document.getElementById("trend_chart").addEventListener("contextmenu", (e) => {
-    console.log(e.clientX);
-    var menu = document.getElementById("chartContextMenu");
-    globals.locateMenu(menu, e.clientX, e.clientY);
-});
-
-document.getElementById("trend_chart").addEventListener("click", (e) => {
-    globals.hideById("chartContextMenu");
-});
-
-document.getElementById("btnZoomPrev").addEventListener("click", (e)=>{
-    trend_ZoomPrev();
-    globals.hideById("chartContextMenu");
-});
-
-//#endregion CHART CONTEXT MENU
 
 //#endregion CHART CURSOR

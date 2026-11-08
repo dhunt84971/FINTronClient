@@ -55,7 +55,29 @@ async function GetFilename(){
             { name: 'CSV Files', extensions: ['csv'] }
           ]
     }
-    const savePath = await dialog.showSaveDialog(null, options);
+
+    // The native save dialog belongs to the OS and cannot be typed into with
+    // the application's own on-screen keyboard, so a touch panel browses and
+    // names the file in-page instead.
+    let savePath;
+    if (window.touchUI && touchUI.enabled && window.touchDialogs){
+        const path = require("path");
+        const current = txtFileName.value || "";
+        const startDir = (current !== "" && path.isAbsolute(current)) ?
+            path.dirname(current) : remote.app.getPath("documents");
+        savePath = await touchDialogs.pickFile({
+            mode: "save",
+            title: "Export to CSV",
+            dir: startDir,
+            extensions: ["csv"],
+            defaultName: path.basename(current)
+        });
+    }
+    else {
+        savePath = await dialog.showSaveDialog(null, options);
+    }
+
+    if (savePath.canceled) return;
     console.log(savePath.filePath);
     txtFileName.value = MakeFilenameCSV(savePath.filePath);
 }
@@ -116,5 +138,11 @@ document.getElementById("btnBrowse").addEventListener("click", () =>{
 //#endregion EVENT HANDLERS
 
 //#region INITIALIZATION CODE
+
+// Touch mode opens this window taller than a mouse needs, and the height the
+// content does not use collects as a gap above the buttons.
+if (window.touchUI) {
+    window.requestAnimationFrame(function () { touchUI.fitHeight(); });
+}
 
 //#endregion INITIALIZATION CODE

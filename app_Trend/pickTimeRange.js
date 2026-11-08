@@ -259,6 +259,12 @@ const dpEndDate = datepicker(document.getElementById("dpEndDate"), {
     }
 });
 
+// Touch mode opens this window taller than a mouse needs, and the height the
+// content does not use collects as a gap above the buttons.
+if (window.touchUI) {
+    window.requestAnimationFrame(function () { touchUI.fitHeight(); });
+}
+
 //#endregion INITIALIZATION CODE
 
 
