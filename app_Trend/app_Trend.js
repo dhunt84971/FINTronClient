@@ -443,22 +443,6 @@ let app_Trend = {
                             var ctx = chart.chart.ctx;
                             var chartArea = chart.chart.chartArea;
 
-                            // The vertical grid lines stand on samples, and the
-                            // last sample is hardly ever one of the ones a line
-                            // is drawn at, so the grid stops short of the right
-                            // hand edge and the chart is left without the
-                            // border the y axis gives it on the left. Draw that
-                            // edge in the grid's own colour. The half pixel is
-                            // what keeps a one pixel line on one pixel.
-                            ctx.save();
-                            ctx.beginPath();
-                            ctx.moveTo(Math.round(chartArea.right) + 0.5, chartArea.top);
-                            ctx.lineTo(Math.round(chartArea.right) + 0.5, chartArea.bottom);
-                            ctx.lineWidth = 1;
-                            ctx.strokeStyle = "#aaaaaa";
-                            ctx.stroke();
-                            ctx.restore();
-
                             let y = 25;
                             let x = -1 * (chartArea.top + chartArea.bottom) / 2;
                             let pen = this.trend.pens.find(x => x.name === this.selectedPen);
@@ -498,11 +482,28 @@ let app_Trend = {
                                     display: true,
                                     drawBorder: true
                                 },
+                                // The grid is thinned out by keeping every nth
+                                // line from the left, so the last one kept is
+                                // hardly ever the last sample and the grid
+                                // stops short of the right hand edge. Marking
+                                // the two end ticks as major changes how the
+                                // thinning works: it spreads the lines between
+                                // the majors and keeps both of them, so one
+                                // lands on the edge and the spacing stays even.
+                                afterFit: (scale) => {
+                                    let ticks = scale._ticks;
+                                    if (!ticks || ticks.length === 0) return;
+                                    ticks[0].major = true;
+                                    ticks[ticks.length - 1].major = true;
+                                },
                                 ticks: {
                                     fontColor: "white",
                                     maxTicksLimit: 7.04,
                                     maxRotation: 0,
-                                    drawBorder: true
+                                    drawBorder: true,
+                                    major: {
+                                        enabled: true
+                                    }
                                 }
                             }],
                             yAxes: yAxes
