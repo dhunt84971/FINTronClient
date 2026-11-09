@@ -123,10 +123,16 @@ body.touch .trend_btnPen {
     min-height: var(--touch_target);
 }
 
-/* The gaps between the pens are the drop targets for a reorder, and 5px of
-   them is not something a fingertip can land on. */
-body.touch .trend_pen_spacer {
-    min-height: 18px;
+/* The gaps between the pens stay the size they are with a mouse - the buttons
+   themselves are already bigger - so a drop target is shown as a line in the
+   gap rather than by opening a 50px hole in the column. Keeping the column
+   still matters for more than looks: the gap the pen will drop into is the one
+   nearest the finger, and a target that pushed the others about as it opened
+   would change which one that is. */
+body.touch .trend_dragTarget {
+    min-height: 5px;
+    border-width: 0 !important;
+    background: #7092be;
 }
 
 body.touch .datapoint,

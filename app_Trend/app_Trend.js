@@ -1612,6 +1612,30 @@ document.addEventListener("drop", (e)=> {
         }
     }
 
+    /// The gap the pen would drop into.
+    ///
+    /// The gaps are five pixels tall, as they are with a mouse, which is not
+    /// something a fingertip can be asked to land on - so the gap nearest the
+    /// finger is taken rather than whatever is under it. A finger taken out of
+    /// the pen column drops nothing, which is how a drag is called off.
+    function spacerNearest(x, y) {
+        var box = container.getBoundingClientRect();
+        if (x < box.left || x > box.right || y < box.top || y > box.bottom) return null;
+
+        var spacers = container.querySelectorAll(".trend_pen_spacer");
+        var best = null;
+        var bestGap = Infinity;
+        for (var i = 0; i < spacers.length; i++) {
+            var r = spacers[i].getBoundingClientRect();
+            var gap = Math.abs((r.top + r.bottom) / 2 - y);
+            if (gap < bestGap) {
+                bestGap = gap;
+                best = spacers[i];
+            }
+        }
+        return best;
+    }
+
     function clearHighlight() {
         if (overSpacer) {
             overSpacer.classList.remove("trend_dragTarget");
@@ -1666,9 +1690,7 @@ document.addEventListener("drop", (e)=> {
         if (!picked) return;
         e.preventDefault();
 
-        var under = document.elementFromPoint(e.clientX, e.clientY);
-        var spacer = (under && under.classList.contains("trend_pen_spacer")) ?
-            under : null;
+        var spacer = spacerNearest(e.clientX, e.clientY);
 
         if (spacer !== overSpacer) {
             clearHighlight();
@@ -1676,6 +1698,16 @@ document.addEventListener("drop", (e)=> {
             if (overSpacer) overSpacer.classList.add("trend_dragTarget");
         }
     });
+
+    // Once a pen is held, the browser must not take the drag as a scroll of the
+    // pen column: it claims the gesture a few pixels in, cancels the pointer,
+    // and the drop never happens. Only preventing the default on the touch
+    // move stops that - a pointer event cannot - and the listener has to be a
+    // non-passive one to be allowed to. Nothing is prevented until a pen is
+    // held, so the column still scrolls as it did.
+    container.addEventListener("touchmove", (e) => {
+        if (picked) e.preventDefault();
+    }, { passive: false });
 
     container.addEventListener("pointerup", () => {
         cancelHold();
