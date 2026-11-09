@@ -1003,8 +1003,11 @@ let app_Trend = {
         window.clearTimeout(this.autoRefreshTimer);
         this.autoRefreshTimer = null;
 
+        // Its own class, not the one the time increments share: choosing an
+        // increment clears that from every nav button, which would put the
+        // light out while auto refresh was still running.
         let btn = document.getElementById("btnAutoRefresh");
-        if (btn) btn.classList.toggle("trend_btnNav_selected", this.autoRefresh);
+        if (btn) btn.classList.toggle("trend_btnToggled", this.autoRefresh);
 
         // Refresh at once, so pressing the button does something to see.
         if (this.autoRefresh) this.AutoRefreshTick();

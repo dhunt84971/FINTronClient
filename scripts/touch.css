@@ -12,6 +12,12 @@ body.touch {
     --touch_target: clamp(44px, 7.5vh, 62px);
     --touch_font: clamp(15px, 2.4vh, 20px);
     touch-action: manipulation;          /* no double-tap zoom */
+
+    /* The hover colour, which this mode has no use for: see NO POINTER
+       AFFORDANCES below. Nothing but :hover rules read it, in this window and
+       in every popup, so pointing it at the resting colour takes the hover
+       paint off .btn, .trend_btn and .datapoint everywhere at once. */
+    --btnBoxItem_bgColor: var(--btnBoxTop_bgColor);
 }
 
 /*#region HIT TARGETS */
@@ -255,6 +261,50 @@ body.touch .div_treeview_item:hover,
 body.touch .inputEntry:hover,
 body.touch .vsplit:hover {
     cursor: default;
+}
+
+/* A finger never moves off what it touched, so the hover state stays on the
+   last thing pressed until something else is pressed - a button that looks
+   held down long after it was let go. The buttons above lose their hover
+   colour through --btnBoxItem_bgColor; these set their own, so they are put
+   back to the colours they rest at. */
+body.touch .btnMenu:hover {
+    background-color: lightgray;
+    color: black;
+}
+
+body.touch .div_treeview_item:hover {
+    background-color: transparent;
+}
+
+body.touch .div_treeview_marker:hover {
+    background-color: rgb(88, 88, 88);
+}
+
+body.touch .div_treeview_arrow_dnrt:hover {
+    border-bottom-color: rgb(51, 51, 51);
+}
+
+body.touch .div_treeview_arrow_right:hover {
+    border-left-color: rgb(51, 51, 51);
+}
+
+body.touch .vsplit:hover {
+    background: #444444;
+}
+
+/* What is selected has to go on looking selected underneath a hover that is
+   never going to go away - and on a panel the thing just touched is usually
+   the thing now selected. */
+body.touch .trend_btnNav_selected,
+body.touch .trend_btnNav_selected:hover {
+    background-color: var(--divTrendNavSelected_bgColor);
+}
+
+body.touch .div_treeview_selected,
+body.touch .div_treeview_selected:hover {
+    background-color: #08a9c5;
+    color: black;
 }
 
 /* Pressed feedback instead, since there is no hover to show what was hit. */
