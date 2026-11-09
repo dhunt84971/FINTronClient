@@ -29,15 +29,7 @@ function ValidTime(input){
         txtDuration.classList.add("invalid");
         txtDuration.value ="N/A";
     }
-    // Update the Accept button
-    if (TimeRangeIsValid()){
-        btnAccept.classList.remove("btnDisabled");
-        console.log("Time range is valid.");
-    }
-    else{
-        btnAccept.classList.add("btnDisabled");
-        console.log("Time range is invalid.");
-    }
+    UpdateAcceptButton();
 }
 
 function ValidDate(input){
@@ -51,16 +43,93 @@ function ValidDate(input){
         txtDuration.classList.add("invalid");
         txtDuration.value = "N/A";
     }
+    UpdateAcceptButton();
+}
+
+/// A range that runs backwards cannot be accepted.
+function UpdateAcceptButton(){
     if (TimeRangeIsValid()){
         btnAccept.classList.remove("btnDisabled");
+        console.log("Time range is valid.");
     }
     else{
         btnAccept.classList.add("btnDisabled");
+        console.log("Time range is invalid.");
     }
 }
 
 function UpdateDuration(){
     txtDuration.value = GetDuration();
+}
+
+/// Puts both ends of the range into the two calendars and the two time fields.
+///
+/// The calendars insist on a JavaScript Date - handed a moment they throw, and
+/// that is what stopped Move End to Now and the duration from changing
+/// anything at all. They also limit one another, a start date capping the end
+/// and the other way about, and setDate refuses a date outside those limits:
+/// both ends move here, so the limits come off first and go back on around the
+/// dates that end up between them.
+function SetDateTimeRange(start, end){
+    var startMoment = moment(start);
+    var endMoment = moment(end);
+    var startDate = moment(startMoment).startOf("day").toDate();
+    var endDate = moment(endMoment).startOf("day").toDate();
+
+    dpStartDate.setMax();
+    dpEndDate.setMin();
+    dpStartDate.setDate(startDate, true);
+    dpEndDate.setDate(endDate, true);
+    dpStartDate.setMax(endDate);
+    dpEndDate.setMin(startDate);
+
+    dpStartTime.value = startMoment.format(timeFormat);
+    dpEndTime.value = endMoment.format(timeFormat);
+
+    dpStartTime.classList.remove("invalid");
+    dpEndTime.classList.remove("invalid");
+    txtDuration.classList.remove("invalid");
+
+    UpdateDuration();
+    UpdateAcceptButton();
+}
+
+/// The current time on the historian, not on this PC.
+///
+/// This window has no database connection of its own, so it asks the window
+/// that opened it - the one whose connection the rest of the application uses
+/// - and gets the answer back on a channel of its own naming. If the historian
+/// cannot be reached, this PC's clock is better than a button that does
+/// nothing.
+function GetServerNow(callback){
+    var win = remote.getCurrentWindow();
+    var parent = win.getParentWindow();
+    if (!parent || parent.isDestroyed()){
+        callback(moment());
+        return;
+    }
+
+    var channel = "serverNow_" + win.id + "_" + Date.now();
+    var answered = false;
+    var answer = function (when){
+        if (answered) return;
+        answered = true;
+        electron.ipcRenderer.removeAllListeners(channel);
+        callback(when);
+    };
+
+    var timer = window.setTimeout(function (){
+        console.log("The historian did not answer; using this PC's clock.");
+        answer(moment());
+    }, 5000);
+
+    electron.ipcRenderer.once(channel, function (event, data){
+        window.clearTimeout(timer);
+        var when = (data && data.now) ? moment(data.now, dateTimeFormat) : null;
+        answer((when && when.isValid()) ? when : moment());
+    });
+
+    parent.webContents.send("serverNow", { windowId: win.id, channel: channel });
 }
 
 //#endregion PAGE ANIMATION FUNCTIONS
@@ -177,17 +246,16 @@ function GetDuration(){
 }
 
 function MoveToNow() {
-    var start = moment(GetStartTime(), dateTimeFormat).toDate();
-    var end = moment(GetEndTime(), dateTimeFormat).toDate();
-    var timeDuration = (moment(end).diff(moment(start)))/1000;
-    
-    end = moment();
-    start = moment(end).subtract("seconds", timeDuration);
+    var start = moment(GetStartTime(), dateTimeFormat);
+    var end = moment(GetEndTime(), dateTimeFormat);
+    if (!start.isValid() || !end.isValid()) return;
+    var durationSeconds = end.diff(start, "seconds");
 
-    dpEndDate.setDate(moment(end).startOf("day"), true);
-    dpEndTime.value = moment(end).format(timeFormat);
-    dpStartDate.setDate(moment(start).startOf("day"), true);
-    dpStartTime.value = moment(start).format(timeFormat);
+    // The end goes to the historian's clock and the start follows it, so the
+    // duration the window is showing is the duration it keeps.
+    GetServerNow(function (now){
+        SetDateTimeRange(moment(now).subtract(durationSeconds, "seconds"), now);
+    });
 }
 
 function ApplyDurationChange(){
@@ -213,15 +281,11 @@ function ApplyDurationChange(){
     }
 
     if (durationSeconds > 0){
-        var start = moment(GetStartTime(), dateTimeFormat).toDate();
-        var end = moment(start).add("seconds", durationSeconds);
-
-        dpStartDate.setDate(moment(start).startOf("day"), true);
-        dpEndDate.setDate(moment(end).startOf("day"), true);
-        dpStartTime.value = moment(start).format(timeFormat);
-        dpEndTime.value = moment(end).format(timeFormat);
-        txtDuration.classList.remove("invalid");
-        UpdateDuration();
+        // The start stays where it is and the end moves to meet the duration
+        // that has just been entered.
+        var start = moment(GetStartTime(), dateTimeFormat);
+        if (!start.isValid()) return;
+        SetDateTimeRange(start, moment(start).add(durationSeconds, "seconds"));
     }
     else{
         // The entered time is invalid.

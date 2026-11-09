@@ -1227,6 +1227,29 @@ ipc.on("timedata", (event, message) => {
     app_Trend.UpdateChart();
 });
 
+// The Trend Duration window has no database connection of its own, so it asks
+// here for the historian's clock - the same one the >>| button moves the end of
+// the trend to. It names the window to answer and the channel to answer on,
+// because the reply has to reach a window rather than the main process.
+ipc.on("serverNow", (event, request) => {
+    if (!request || !request.channel) return;
+
+    let answer = (now) => {
+        let win = remote.BrowserWindow.fromId(request.windowId);
+        if (win && !win.isDestroyed()) win.webContents.send(request.channel, { now: now });
+    };
+
+    try {
+        db.getNow((err, result) => {
+            answer((err || !result) ? null : result.recordset[0].Now);
+        });
+    }
+    catch (err) {
+        console.log(err);
+        answer(null);
+    }
+});
+
 ipc.on("penProps", (event, message) => {
     let pen = message.pen;
     console.log(pen);
@@ -1613,6 +1636,13 @@ document.getElementById("btnZoomPrev").addEventListener("click", (e)=>{
 //#endregion CHART CONTEXT MENU
 
 //#region CHART CURSOR
+
+// Loaded once rather than on every draw: an image made inside the draw is only
+// ready by luck, and on a touch panel there is no hover to force the redraw
+// that would finally show it.
+var trendZoomImage = new Image();
+trendZoomImage.src = "./images/Zoom.png";
+
 Chart.defaults.LineWithLine = Chart.defaults.line;
 Chart.controllers.LineWithLine = Chart.controllers.line.extend({
     draw: function(ease) {
@@ -1689,10 +1719,8 @@ Chart.controllers.LineWithLine = Chart.controllers.line.extend({
                 else {
                     if (trendDragData.start_x != trendDragData.end_x){
                         ctx.fillText(trendDragData.diffTime, trendDragData.end_x + textPosXOffset, bottomY - textPosYOffset);
-                        let zoomImage = new Image();
-                        zoomImage.src = "./images/Zoom.png";
                         let offset_x = trendDragData.start_x < trendDragData.end_x? trendDragData.start_x : trendDragData.end_x;
-                        ctx.drawImage(zoomImage, Math.abs(trendDragData.start_x - trendDragData.end_x)/2 + offset_x - 25, (bottomY - topY)/2 + topY, 50, 45);
+                        ctx.drawImage(trendZoomImage, Math.abs(trendDragData.start_x - trendDragData.end_x)/2 + offset_x - 25, (bottomY - topY)/2 + topY, 50, 45);
                     }
                 }
             }
@@ -1724,6 +1752,14 @@ Chart.Tooltip.positioners.custom = function(elements, eventPosition) {
 trend_chart.onpointerdown = chart_onPointerDownHandler;
 trend_chart.onpointerup = chart_onPointerUpHandler;
 trend_chart.onpointermove = null;
+trend_chart.onpointercancel = function (e) {
+    if (!chart_touchSelect()) return;
+    // The system has taken the touch away - a palm, a gesture, the window
+    // losing it - so the lift that would have ended the selection is not
+    // coming. End it here on whatever has been selected so far, rather than
+    // leave a drag that never finishes and swallows the next touch.
+    chart_touchPointerUp(e);
+};
 
 var trendDragData = {
     startTime: "",
@@ -1735,6 +1771,159 @@ var trendDragData = {
     start_x: 0,
     end_x: 0,
 };
+
+/// True when the chart's selection has to be driven by the pointer's own
+/// coordinates instead of by the point the chart is hovering.
+function chart_touchSelect() {
+    return !!(window.touchUI && touchUI.enabled);
+}
+
+/// The sample nearest a pointer event, worked out from the event's own
+/// coordinates.
+///
+/// The mouse path below reads the point the chart is hovering, which a finger
+/// cannot provide. The chart only moves that point when a touch lands, and
+/// that happens after this handler has run, so what it holds here is wherever
+/// the previous touch left it - the far end of the last drag. Taking the
+/// position from the event itself is what lets a tap be judged against the
+/// region it was aimed at.
+///
+/// Returns {index, x, px, time}, where x is the sample's own position - the
+/// region is drawn between samples, as with the mouse - and px is where the
+/// finger actually landed.
+function chart_sampleAtPointer(e) {
+    var chart = app_Trend.chart;
+    if (!chart || !chart.data || !chart.data.labels) return null;
+
+    // Every pen shares the x axis, so the first dataset holding any points
+    // gives the sample positions.
+    var points = null;
+    for (var d = 0; d < chart.data.datasets.length; d++) {
+        var meta = chart.getDatasetMeta(d);
+        if (meta && meta.data && meta.data.length > 0) {
+            points = meta.data;
+            break;
+        }
+    }
+    if (!points) return null;
+
+    var px = e.clientX - trend_chart.getBoundingClientRect().left;
+    var best = -1;
+    var bestGap = Infinity;
+    for (var i = 0; i < points.length; i++) {
+        if (!points[i]._model) continue;
+        var gap = Math.abs(points[i]._model.x - px);
+        if (gap < bestGap) {
+            bestGap = gap;
+            best = i;
+        }
+    }
+    if (best < 0) return null;
+
+    var label = chart.data.labels[best];
+    return {
+        index: best,
+        x: points[best]._model.x,
+        px: px,
+        time: Array.isArray(label) ? label.join(" ") : String(label)
+    };
+}
+
+/// The span between the two ends of the selection, as the cursor reports it.
+function chart_setDiffTime() {
+    let mStart = moment(trendDragData.startTime);
+    let mEnd = moment(trendDragData.endTime);
+    trendDragData.dragForward = (mStart < mEnd);
+    let diffSecs = trendDragData.dragForward ? mEnd.diff(mStart, "seconds")
+        : mStart.diff(mEnd, "seconds");
+    trendDragData.diffTime = trendDragData.dragForward ? globals.getDHMSFromSecs(diffSecs)
+        : "- " + globals.getDHMSFromSecs(diffSecs);
+    console.log(`Difference in seconds = ${diffSecs}`);
+}
+
+/// Drops the selected region and redraws the chart without it. With a mouse
+/// this happens when the pointer leaves the region (see move_handler); a
+/// finger cannot leave it, so a tap outside it does the same job.
+function trend_clearSelection() {
+    trendDragData.displayDiffTime = false;
+    trendDragData.start_x = 0;
+    trendDragData.end_x = 0;
+    trend_chart.onpointermove = null;
+    // The data has not changed - only what is drawn over the top of it.
+    if (app_Trend.chart) app_Trend.chart.render();
+}
+
+function chart_touchPointerDown(e) {
+    // A right click is not a selection, and the mouse may still be in use with
+    // touch mode on.
+    if (e.button > 0) return;
+
+    var sample = chart_sampleAtPointer(e);
+    if (!sample) return;
+
+    var left = Math.min(trendDragData.start_x, trendDragData.end_x);
+    var right = Math.max(trendDragData.start_x, trendDragData.end_x);
+    var selected = trendDragData.displayDiffTime && !trendDragData.dragging
+        && right > left;
+
+    // A touch inside the region that is already there belongs to that region:
+    // it zooms into it, as moving back into it and clicking does with a mouse.
+    // This is what a tap used to do instead - read the point the chart was
+    // still hovering, decide it was somewhere else entirely, and drag the
+    // region over to the finger.
+    if (selected && sample.px >= left && sample.px <= right) {
+        trend_Zoom(e);
+        return;
+    }
+
+    // Anywhere else begins again. A drag makes a new region; a tap, which ends
+    // where it began, leaves nothing - see chart_touchPointerUp - and that is
+    // how a selection is cleared without a pointer to move out of it.
+    trendDragData.start_x = sample.x;
+    trendDragData.end_x = sample.x;
+    trendDragData.startTime = sample.time;
+    trendDragData.endTime = sample.time;
+    trendDragData.displayDiffTime = true;
+    trendDragData.dragging = true;
+    chart_setDiffTime();
+    trend_chart.onpointermove = chart_touchPointerMove;
+}
+
+function chart_touchPointerMove(e) {
+    if (!trendDragData.dragging) return;
+    var sample = chart_sampleAtPointer(e);
+    if (!sample) return;
+    trendDragData.end_x = sample.x;
+    trendDragData.endTime = sample.time;
+    chart_setDiffTime();
+}
+
+function chart_touchPointerUp(e) {
+    // Without a hover there is nothing for the move handler to do once the
+    // finger is up.
+    trend_chart.onpointermove = null;
+    if (!trendDragData.dragging) return;
+    trendDragData.dragging = false;
+
+    var sample = chart_sampleAtPointer(e);
+    if (sample) {
+        trendDragData.end_x = sample.x;
+        trendDragData.endTime = sample.time;
+        chart_setDiffTime();
+    }
+
+    // A tap rather than a drag. There is no region to keep, and a region of no
+    // width left behind would swallow the next tap.
+    if (trendDragData.start_x === trendDragData.end_x) {
+        trend_clearSelection();
+        return;
+    }
+
+    // Nothing else will ask for a redraw now that the finger is up, and the
+    // region is only finished once it carries the magnifier that says it can
+    // be zoomed into.
+    if (app_Trend.chart) app_Trend.chart.render();
+}
 
 function trend_Zoom(e) {
     console.log("Clicked on chart.");
@@ -1764,6 +1953,10 @@ function trend_Zoom(e) {
 };
 
 function chart_onPointerDownHandler(e) {
+    if (chart_touchSelect()) {
+        chart_touchPointerDown(e);
+        return;
+    }
     // check for data point near event location
     var activePoint = app_Trend.chart.tooltip._active[0];
     if (activePoint){
@@ -1783,6 +1976,10 @@ function chart_onPointerDownHandler(e) {
 };
 
 function chart_onPointerUpHandler(e) {
+    if (chart_touchSelect()) {
+        chart_touchPointerUp(e);
+        return;
+    }
     // check for data point near event location
     var activePoint = app_Trend.chart.tooltip._active[0];
     if (activePoint){
@@ -1816,15 +2013,7 @@ function move_handler(e) {
         else{
             console.log(`Dragging end time chart @ ${x}`);
             trendDragData.endTime = activePoint._chart.data.labels[activePoint._index].join(" ");
-
-            let mStart = moment(trendDragData.startTime);
-            let mEnd = moment(trendDragData.endTime);
-            trendDragData.dragForward = (mStart < mEnd); 
-            let diffSecs = trendDragData.dragForward ? mEnd.diff(mStart, "seconds") 
-                : mStart.diff(mEnd, "seconds");
-                trendDragData.diffTime = trendDragData.dragForward ? globals.getDHMSFromSecs(diffSecs) 
-                : "- " + globals.getDHMSFromSecs(diffSecs);
-            console.log(`Difference in seconds = ${diffSecs}`);
+            chart_setDiffTime();
         }
     }
 };

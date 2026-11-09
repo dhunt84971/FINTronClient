@@ -210,6 +210,34 @@ body.touch #lstLocations {
 }
 /*#endregion SCROLLING */
 
+/* The pen rows below grow wider in touch mode - the properties button at the
+   end of each one grows with the larger padding - while the two buttons above
+   them are pinned to the pixel. The tag button then lines up with nothing and
+   leaves a notch at the end of the row, so Add Pen takes up whatever is left.
+   The width is overridden because the pen name / description toggle writes it
+   straight onto the element. */
+body.touch #divAddPen #trend_btnAddPen {
+    flex: 1 1 auto;
+    width: auto !important;
+}
+
+/* One line of text in a flex row is laid against the top of a box taller than
+   itself. The toolbar is taller in touch mode, so the file name has to be
+   centred in it rather than left where stretch puts it. */
+body.touch .toolbar_filename {
+    align-items: center;
+}
+
+/*#region CHART */
+/* Selecting a region of the trend is a drag of the chart's own, so the browser
+   must not claim the gesture. Left to pan the page it cancels the pointer a few
+   pixels into the drag, and the lift that should finish the selection - and
+   with it the tap that zooms into the region - never arrives at all. */
+body.touch #trend_chart {
+    touch-action: none;
+}
+/*#endregion CHART */
+
 /*#region NO POINTER AFFORDANCES */
 /* A finger cannot hover, so the hover tooltip only ever appears stuck on after
    a tap. The same goes for the hover highlights, which would stay lit on the
