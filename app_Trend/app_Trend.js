@@ -442,6 +442,23 @@ let app_Trend = {
                         afterDraw: chart => {
                             var ctx = chart.chart.ctx;
                             var chartArea = chart.chart.chartArea;
+
+                            // The vertical grid lines stand on samples, and the
+                            // last sample is hardly ever one of the ones a line
+                            // is drawn at, so the grid stops short of the right
+                            // hand edge and the chart is left without the
+                            // border the y axis gives it on the left. Draw that
+                            // edge in the grid's own colour. The half pixel is
+                            // what keeps a one pixel line on one pixel.
+                            ctx.save();
+                            ctx.beginPath();
+                            ctx.moveTo(Math.round(chartArea.right) + 0.5, chartArea.top);
+                            ctx.lineTo(Math.round(chartArea.right) + 0.5, chartArea.bottom);
+                            ctx.lineWidth = 1;
+                            ctx.strokeStyle = "#aaaaaa";
+                            ctx.stroke();
+                            ctx.restore();
+
                             let y = 25;
                             let x = -1 * (chartArea.top + chartArea.bottom) / 2;
                             let pen = this.trend.pens.find(x => x.name === this.selectedPen);
