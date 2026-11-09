@@ -1227,6 +1227,29 @@ ipc.on("timedata", (event, message) => {
     app_Trend.UpdateChart();
 });
 
+// The Trend Duration window has no database connection of its own, so it asks
+// here for the historian's clock - the same one the >>| button moves the end of
+// the trend to. It names the window to answer and the channel to answer on,
+// because the reply has to reach a window rather than the main process.
+ipc.on("serverNow", (event, request) => {
+    if (!request || !request.channel) return;
+
+    let answer = (now) => {
+        let win = remote.BrowserWindow.fromId(request.windowId);
+        if (win && !win.isDestroyed()) win.webContents.send(request.channel, { now: now });
+    };
+
+    try {
+        db.getNow((err, result) => {
+            answer((err || !result) ? null : result.recordset[0].Now);
+        });
+    }
+    catch (err) {
+        console.log(err);
+        answer(null);
+    }
+});
+
 ipc.on("penProps", (event, message) => {
     let pen = message.pen;
     console.log(pen);
