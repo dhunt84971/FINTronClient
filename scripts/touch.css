@@ -210,6 +210,16 @@ body.touch #lstLocations {
 }
 /*#endregion SCROLLING */
 
+/*#region CHART */
+/* Selecting a region of the trend is a drag of the chart's own, so the browser
+   must not claim the gesture. Left to pan the page it cancels the pointer a few
+   pixels into the drag, and the lift that should finish the selection - and
+   with it the tap that zooms into the region - never arrives at all. */
+body.touch #trend_chart {
+    touch-action: none;
+}
+/*#endregion CHART */
+
 /*#region NO POINTER AFFORDANCES */
 /* A finger cannot hover, so the hover tooltip only ever appears stuck on after
    a tap. The same goes for the hover highlights, which would stay lit on the
