@@ -165,12 +165,12 @@ let app_Trend = {
                 title: "Save Trend As",
                 dir: DOCSDIR,
                 extensions: ["trd"],
-                defaultName: this.trend.name ? this.trend.name + ".trd" : ""
+                defaultName: this.WithTrdExtension(this.trend.name)
             }) :
             await dialog.showSaveDialog(null, options);
         if (result) {
             if (!result.canceled){
-                let fName = result.filePath.endsWith(".trd") ? result.filePath : result.filePath + ".trd";
+                let fName = this.WithTrdExtension(result.filePath);
                 this.trend.name = this.StripFileName(fName);
                 this.html_titleTrend.innerText = this.trend.name;
                 this.SaveTrend(fName);
@@ -1244,8 +1244,23 @@ let app_Trend = {
     //#endregion PAGE ANIMATION FUNCTIONS
 
     //#region HELPER FUNCTIONS
+    /// The name with one .trd on the end, whatever it arrived with.
+    ///
+    /// A trend carries its extension in its name - Untitled.trd - so adding
+    /// another gave the Save As box Untitled.trd.trd to suggest. A name typed
+    /// without one still gets one, and a name typed with one keeps the one it
+    /// has, in whichever case it was typed: Windows does not tell .TRD and
+    /// .trd apart, and neither should this.
+    WithTrdExtension: function (name) {
+        if (!name) return "";
+        return name.toLowerCase().endsWith(".trd") ? name : name + ".trd";
+    },
+
+    /// The file's own name, without the folders in front of it. Windows
+    /// separates them with a backslash and everything else with a slash, and
+    /// this is handed paths from both.
     StripFileName: function (fullName) {
-        return fullName.substring(fullName.lastIndexOf("/") + 1);
+        return String(fullName).split(/[\\/]/).pop();
     },
 
     convertRecordSetToCSV: function (args) {
