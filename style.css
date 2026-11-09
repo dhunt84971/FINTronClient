@@ -581,6 +581,18 @@
   }
   
   
+  /* An icon on a button is sized in em, so it grows with the button's own text
+     - 13px here, the larger touch font with touchscreen mode on - rather than
+     needing a size of its own for each. */
+  .trend_btnIcon {
+    /* The global reset gives every element a font of its own, so the icon has
+       to take the button's before em means anything here. */
+    font-size: inherit;
+    width: 1.9em;
+    height: 1.9em;
+    align-self: center;
+  }
+
   .trend_btnNav_selected {
     background-color: var(--divTrendNavSelected_bgColor);
     border-color: green !important;

@@ -72,6 +72,9 @@ let app_Trend = {
     draggedPen: {},
     zoomprev_StartTime: "",
     zoomprev_EndTime: "",
+    autoRefresh: false,
+    autoRefreshTimer: null,
+    autoRefreshBusy: false,
     //#endregion GLOBAL DECLARATIONS
 
     //#region TREND FUNCTIONS
@@ -924,6 +927,94 @@ let app_Trend = {
 
     },
 
+    //#region AUTO REFRESH
+    /// Moves the end of the trend to the current time on the historian, keeping
+    /// the duration, so the start moves with it.
+    ///
+    /// Shared by the >>| button and by auto refresh. The caller is told whether
+    /// it worked rather than being shown a message box, because auto refresh
+    /// cannot put one on the screen every few seconds.
+    MoveEndToNow: function (done) {
+        let durationSeconds = moment(this.trend.endTime, dateTimeFormat)
+            .diff(moment(this.trend.startTime, dateTimeFormat), "seconds");
+
+        db.getNow((err, result) => {
+            if (err || !result || !result.recordset || !result.recordset[0]) {
+                if (done) done(false);
+                return;
+            }
+            this.trend.endTime = result.recordset[0].Now;
+            this.trend.startTime = moment(this.trend.endTime, dateTimeFormat)
+                .add(-1 * durationSeconds, "seconds").format(dateTimeFormat);
+            this.UpdateChart();
+            if (done) done(true);
+        });
+    },
+
+    /// How long to wait between refreshes, taken from the duration on show: a
+    /// quarter of an hour or less is worth watching every five seconds, up to
+    /// an hour every ten, and anything longer once a minute. Read again before
+    /// each wait, so zooming in or changing the range changes the pace.
+    AutoRefreshInterval: function () {
+        let seconds = moment(this.trend.endTime, dateTimeFormat)
+            .diff(moment(this.trend.startTime, dateTimeFormat), "seconds");
+        if (!(seconds > 0)) return 60000;
+        if (seconds <= 15 * 60) return 5000;
+        if (seconds <= 60 * 60) return 10000;
+        return 60000;
+    },
+
+    AutoRefreshTick: function () {
+        if (!this.autoRefresh) return;
+
+        // A historian that is slow to answer must not have the next refresh
+        // stacked on top of the one still running.
+        if (this.autoRefreshBusy) {
+            this.ScheduleAutoRefresh();
+            return;
+        }
+
+        this.autoRefreshBusy = true;
+        this.MoveEndToNow((ok) => {
+            this.autoRefreshBusy = false;
+            if (!ok) {
+                // Stop rather than keep asking a historian that is not
+                // answering, and say so once instead of every few seconds.
+                this.SetAutoRefresh(false);
+                globals.showWarningMessageBox(
+                    "Trend - Auto refresh stopped. Failed to get data.");
+                return;
+            }
+            this.ScheduleAutoRefresh();
+        });
+    },
+
+    ScheduleAutoRefresh: function () {
+        window.clearTimeout(this.autoRefreshTimer);
+        this.autoRefreshTimer = null;
+        if (!this.autoRefresh) return;
+        this.autoRefreshTimer = window.setTimeout(() => {
+            this.AutoRefreshTick();
+        }, this.AutoRefreshInterval());
+    },
+
+    SetAutoRefresh: function (on) {
+        this.autoRefresh = (on === true);
+        window.clearTimeout(this.autoRefreshTimer);
+        this.autoRefreshTimer = null;
+
+        let btn = document.getElementById("btnAutoRefresh");
+        if (btn) btn.classList.toggle("trend_btnNav_selected", this.autoRefresh);
+
+        // Refresh at once, so pressing the button does something to see.
+        if (this.autoRefresh) this.AutoRefreshTick();
+    },
+
+    ToggleAutoRefresh: function () {
+        this.SetAutoRefresh(!this.autoRefresh);
+    },
+    //#endregion AUTO REFRESH
+
     ChangeStartTime: function (increment) {
         let newTime = moment(this.trend.startTime).add(increment, "seconds");
         if (moment(this.trend.endTime).diff(newTime) > 0) {
@@ -1390,19 +1481,22 @@ document.getElementById("btnEndFuture").addEventListener("click", () => {
     }
 });
 
-document.getElementById("btnNow").addEventListener("click", async () => {
-    let diff_secs = (moment(app_Trend.trend.endTime, dateTimeFormat).diff(moment(app_Trend.trend.startTime, dateTimeFormat))) / 1000;
-    db.getNow((err, result) => {
-        //trend.endTime = moment().format(dateTimeFormat);
-        if (err) {
-            globals.showWarningMessageBox("Trend - Failed to get data.");
-            return;
-        }
-        app_Trend.trend.endTime = result.recordset[0].Now;
-        app_Trend.trend.startTime = moment(app_Trend.trend.endTime, dateTimeFormat).add(-1 * diff_secs, "seconds").format(dateTimeFormat);
-        app_Trend.UpdateChart();
+document.getElementById("btnNow").addEventListener("click", () => {
+    app_Trend.MoveEndToNow((ok) => {
+        if (!ok) globals.showWarningMessageBox("Trend - Failed to get data.");
     });
+});
 
+document.getElementById("btnAutoRefresh").addEventListener("click", () => {
+    app_Trend.ToggleAutoRefresh();
+});
+
+// A trend left refreshing behind another window would go on asking the
+// historian for data nobody is watching, so the mode lasts only as long as the
+// window has the focus. Element blur does not reach here: blur does not bubble,
+// and this listener is not a capturing one.
+window.addEventListener("blur", () => {
+    if (app_Trend.autoRefresh) app_Trend.SetAutoRefresh(false);
 });
 
 //#endregion NAV BUTTONS

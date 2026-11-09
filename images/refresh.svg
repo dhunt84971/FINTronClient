@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Auto refresh">
+    <title>Auto refresh</title>
+    <!-- Most of a circle, drawn clockwise, with a gap at the upper right. -->
+    <path d="M 18.99 10.77 A 7.1 7.1 0 1 1 14.43 5.33"
+          fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round"/>
+    <!-- The head sits in the gap, pointing the way the stroke was going. -->
+    <path d="M 18.75 6.9 L 12.08 7.98 L 14.34 1.78 Z"
+          fill="#ffffff"/>
+</svg>
