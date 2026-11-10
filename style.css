@@ -581,6 +581,28 @@
   }
   
   
+  /* An icon on a button is sized in em, so it grows with the button's own text
+     - 13px here, the larger touch font with touchscreen mode on - rather than
+     needing a size of its own for each. */
+  .trend_btnIcon {
+    /* The global reset gives every element a font of its own, so the icon has
+       to take the button's before em means anything here. */
+    font-size: inherit;
+    width: 1.9em;
+    height: 1.9em;
+    align-self: center;
+  }
+
+  /* A button that toggles a mode on, rather than one of a group of choices.
+     SelectNavInc clears trend_btnNav_selected from every nav button when a
+     time increment is chosen, which would put out a mode that is still on, so
+     a toggle carries its own lit state. The colour is !important so that a
+     hover cannot paint over a mode that is running. */
+  .trend_btnToggled {
+    background-color: var(--divTrendNavSelected_bgColor) !important;
+    border-color: green !important;
+  }
+
   .trend_btnNav_selected {
     background-color: var(--divTrendNavSelected_bgColor);
     border-color: green !important;
